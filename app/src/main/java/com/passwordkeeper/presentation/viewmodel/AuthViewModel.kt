@@ -57,10 +57,15 @@ class AuthViewModel @Inject constructor(
     fun resetAuthState() {
         _authState.value = AuthState.Idle
     }
+
+    fun setAuthErrorIdle() {
+        _authState.value = AuthState.ErrorIdle
+    }
 }
 
 sealed class AuthState {
     data object Idle : AuthState()
     data object Success : AuthState()
     data class Error(val message: String) : AuthState()
+    data object ErrorIdle : AuthState()
 }

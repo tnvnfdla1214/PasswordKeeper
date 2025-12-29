@@ -1,5 +1,6 @@
 package com.passwordkeeper.presentation.ui.auth
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,6 +56,7 @@ fun AuthScreen(
     }
 
     LaunchedEffect(authState) {
+        Log.d("qweqwe","$authState")
         when (authState) {
             is AuthState.Success -> {
                 onAuthSuccess()
@@ -63,8 +65,9 @@ fun AuthScreen(
             }
             is AuthState.Error -> {
                 password = ""
+                viewModel.setAuthErrorIdle()
             }
-            is AuthState.Idle -> {}
+            else -> {}
         }
     }
 
@@ -80,7 +83,10 @@ fun AuthScreen(
             verticalArrangement = Arrangement.Top
         ) {
             Text(
-                text = if (authState is AuthState.Error) "다시 한번 눌러 주세요" else "비밀번호를 놀러 주세요",
+                text = when (authState) {
+                    is AuthState.Error,AuthState.ErrorIdle -> "다시 한번 눌러 주세요"
+                    else -> "비밀번호를 놀러 주세요"
+                },
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(bottom = 16.dp),
@@ -92,12 +98,15 @@ fun AuthScreen(
             )
 
             Text(
-                text = (authState as? AuthState.Error)?.message ?: "",
+                text = when (authState) {
+                    is AuthState.Error, AuthState.ErrorIdle -> "비밀번호가 일치하지 않습니다"
+                    is AuthState.Success, AuthState.Idle -> ""
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier
                     .padding(bottom = 56.dp)
-                    .alpha(if (authState is AuthState.Error) 1f else 0f),
+                    .alpha(if (authState is AuthState.Error || authState is AuthState.ErrorIdle) 1f else 0f),
             )
 
             PasswordKeypad(
