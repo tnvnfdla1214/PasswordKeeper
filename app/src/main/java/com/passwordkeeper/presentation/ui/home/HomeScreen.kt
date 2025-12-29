@@ -94,78 +94,82 @@ fun HomeScreen(
                     )
                 }
             }
-
-            // 검색창
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { viewModel.onSearchQueryChange(it) },
+            // 하단 컨텐츠 영역
+            Column (
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                placeholder = { Text("계정 이름을 입력해 보세요") },
-                leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = "검색")
-                },
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedContainerColor = Color(0xFFF5F5F5),
-                    unfocusedContainerColor = Color(0xFFF5F5F5)
-                )
-            )
-
-            // 삭제 버튼
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.End
+                    .fillMaxSize()
             ) {
-                TextButton(onClick = { /* 삭제 로직 추가 */ }) {
-                    Text("삭제", color = Color.Gray, fontSize = 14.sp)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // 아이템 리스트
-            if (items.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = if (searchQuery.isBlank()) "저장된 항목이 없습니다" else "검색 결과가 없습니다",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { viewModel.onSearchQueryChange(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    placeholder = { Text("계정 이름을 입력해 보세요") },
+                    leadingIcon = {
+                        Icon(Icons.Default.Search, contentDescription = "검색")
+                    },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        focusedContainerColor = Color(0xFFF5F5F5),
+                        unfocusedContainerColor = Color(0xFFF5F5F5)
                     )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    items(items, key = { it.id }) { item ->
-                        when (item) {
-                            is Item.Password -> PasswordListItem(
-                                password = item,
-                                onClick = {
-                                    viewModel.updateLastAccessed(item.id)
-                                    onItemClick(item.id)
-                                }
-                            )
+                )
 
-                            is Item.Memo -> MemoListItem(
-                                memo = item,
-                                onClick = {
-                                    viewModel.updateLastAccessed(item.id)
-                                    onItemClick(item.id)
-                                }
-                            )
+                // 삭제 버튼
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { /* 삭제 로직 추가 */ }) {
+                        Text("삭제", color = Color.Gray, fontSize = 14.sp)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // 아이템 리스트
+                if (items.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (searchQuery.isBlank()) "저장된 항목이 없습니다" else "검색 결과가 없습니다",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        items(items, key = { it.id }) { item ->
+                            when (item) {
+                                is Item.Password -> PasswordListItem(
+                                    password = item,
+                                    onClick = {
+                                        viewModel.updateLastAccessed(item.id)
+                                        onItemClick(item.id)
+                                    }
+                                )
+
+                                is Item.Memo -> MemoListItem(
+                                    memo = item,
+                                    onClick = {
+                                        viewModel.updateLastAccessed(item.id)
+                                        onItemClick(item.id)
+                                    }
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
