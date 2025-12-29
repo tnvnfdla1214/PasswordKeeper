@@ -1,6 +1,8 @@
 package com.passwordkeeper.di
 
+import com.passwordkeeper.data.repository.AuthRepositoryImpl
 import com.passwordkeeper.data.repository.ItemRepositoryImpl
+import com.passwordkeeper.domain.repository.AuthRepository
 import com.passwordkeeper.domain.repository.ItemRepository
 import dagger.Binds
 import dagger.Module
@@ -17,4 +19,10 @@ abstract class RepositoryModule {
     abstract fun bindItemRepository(
         itemRepositoryImpl: ItemRepositoryImpl
     ): ItemRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(
+        authRepositoryImpl: AuthRepositoryImpl
+    ): AuthRepository
 }

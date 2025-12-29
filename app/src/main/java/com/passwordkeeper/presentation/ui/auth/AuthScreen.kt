@@ -9,20 +9,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.passwordkeeper.presentation.viewmodel.AuthState
+import com.passwordkeeper.presentation.viewmodel.AuthViewModel
 
 @Composable
 fun AuthScreen(
     onAuthSuccess: () -> Unit,
     onBiometricAuth: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     var password by remember { mutableStateOf("") }
+    val authState by viewModel.authState
 
     LaunchedEffect(password) {
         if (password.length == 4) {
-            // TODO: 실제로는 비밀번호 검증 후 성공 시 호출
-            onAuthSuccess()
-            password = ""
+            viewModel.validatePassword(password)
+        }
+    }
+
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Success -> {
+                onAuthSuccess()
+                password = ""
+                viewModel.resetAuthState()
+            }
+            is AuthState.Error -> {
+                password = ""
+            }
+            is AuthState.Idle -> {}
         }
     }
 
@@ -50,13 +67,16 @@ fun AuthScreen(
                 modifier = Modifier.padding(bottom = 23.dp),
             )
 
-            //todo : 상황에 따라 text가 변경되는 기능을 추가해야 한다
-            Text(
-                text = "재대로 입력하신게 맞나요?",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(bottom = 56.dp),
-            )
+            if (authState is AuthState.Error) {
+                Text(
+                    text = (authState as AuthState.Error).message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 56.dp),
+                )
+            } else {
+                Spacer(modifier = Modifier.height(56.dp))
+            }
 
             PasswordKeypad(
                 onNumberClick = { number ->

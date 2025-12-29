@@ -4,23 +4,45 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.passwordkeeper.domain.usecase.HasMasterPasswordUseCase
+import com.passwordkeeper.domain.usecase.SaveMasterPasswordUseCase
+import com.passwordkeeper.domain.usecase.VerifyPasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor() : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val verifyPasswordUseCase: VerifyPasswordUseCase,
+    private val saveMasterPasswordUseCase: SaveMasterPasswordUseCase,
+    private val hasMasterPasswordUseCase: HasMasterPasswordUseCase
+) : ViewModel() {
     private val _authState = mutableStateOf<AuthState>(AuthState.Idle)
     val authState: State<AuthState> = _authState
 
-    fun validatePassword(password: String) {
-        // 실제로는 SharedPreferences 또는 DataStore에서 저장된 비밀번호와 비교
+    init {
+        checkAndInitializeMasterPassword()
+    }
+
+    private fun checkAndInitializeMasterPassword() {
         viewModelScope.launch {
             try {
-                // 예시: 저장된 비밀번호가 "1234"라고 가정
-                val savedPassword = "1234"
+                val hasMasterPassword = hasMasterPasswordUseCase()
+                if (!hasMasterPassword) {
+                    // 마스터 비밀번호가 없으면 "1234"로 초기화
+                    saveMasterPasswordUseCase("1234")
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("초기화 오류: ${e.message}")
+            }
+        }
+    }
 
-                if (password == savedPassword) {
+    fun validatePassword(password: String) {
+        viewModelScope.launch {
+            try {
+                val isValid = verifyPasswordUseCase(password)
+                if (isValid) {
                     _authState.value = AuthState.Success
                 } else {
                     _authState.value = AuthState.Error("비밀번호가 일치하지 않습니다")
@@ -37,7 +59,7 @@ class AuthViewModel @Inject constructor() : ViewModel() {
 }
 
 sealed class AuthState {
-    object Idle : AuthState()
-    object Success : AuthState()
+    data object Idle : AuthState()
+    data object Success : AuthState()
     data class Error(val message: String) : AuthState()
 }
