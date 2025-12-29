@@ -9,20 +9,44 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.passwordkeeper.presentation.viewmodel.AuthState
 import com.passwordkeeper.presentation.viewmodel.AuthViewModel
+import com.passwordkeeper.util.BiometricAuthManager
 
 @Composable
 fun AuthScreen(
     onAuthSuccess: () -> Unit,
-    onBiometricAuth: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     var password by remember { mutableStateOf("") }
     val authState by viewModel.authState
+    val context = LocalContext.current
+    val activity = context as? FragmentActivity
+
+    val biometricAuthManager = remember { BiometricAuthManager() }
+
+    val handleBiometricAuth: () -> Unit = {
+        activity?.let { fragmentActivity ->
+            biometricAuthManager.authenticate(
+                activity = fragmentActivity,
+                onSuccess = {
+                    onAuthSuccess()
+                },
+                onError = { _ -> },
+                onFailed = {}
+            )
+        }
+    }
+
+    // 화면 진입 시 자동으로 생체인식 실행
+    LaunchedEffect(Unit) {
+        handleBiometricAuth()
+    }
 
     LaunchedEffect(password) {
         if (password.length == 4) {
@@ -34,6 +58,7 @@ fun AuthScreen(
         when (authState) {
             is AuthState.Success -> {
                 onAuthSuccess()
+                password = ""
                 viewModel.resetAuthState()
             }
             is AuthState.Error -> {
@@ -86,7 +111,9 @@ fun AuthScreen(
                         password = password.dropLast(1)
                     }
                 },
-                onBiometricClick = onBiometricAuth,
+                onBiometricClick = {
+                    handleBiometricAuth()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
             )

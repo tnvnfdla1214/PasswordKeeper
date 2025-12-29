@@ -10,7 +10,9 @@ class BiometricAuthManager @Inject constructor() {
 
     fun canAuthenticate(activity: FragmentActivity): Boolean {
         val biometricManager = BiometricManager.from(activity)
-        return when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+        val authenticators = BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                            BiometricManager.Authenticators.BIOMETRIC_WEAK
+        return when (biometricManager.canAuthenticate(authenticators)) {
             BiometricManager.BIOMETRIC_SUCCESS -> true
             else -> false
         }
@@ -42,9 +44,14 @@ class BiometricAuthManager @Inject constructor() {
                 }
             })
 
+        // 지문, 얼굴, 홍채 등 모든 생체인증을 허용
+        val authenticators = BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                            BiometricManager.Authenticators.BIOMETRIC_WEAK
+
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("비밀번호 저장소")
-            .setSubtitle("지문 인증으로 잠금 해제")
+            .setTitle("앱 이름")
+//            .setSubtitle("생체 인증으로 잠금 해제")
+            .setAllowedAuthenticators(authenticators)
             .setNegativeButtonText("비밀번호 입력")
             .build()
 
