@@ -19,10 +19,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.passwordkeeper.domain.usecase.DeletePasswordUseCase
-import com.passwordkeeper.domain.usecase.GetPasswordByIdUseCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.passwordkeeper.domain.model.Item
+import com.passwordkeeper.domain.usecase.DeleteItemUseCase
+import com.passwordkeeper.domain.usecase.GetItemByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,12 +33,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val getPasswordByIdUseCase: GetPasswordByIdUseCase,
-    private val deletePasswordUseCase: DeletePasswordUseCase
+    private val getPasswordByIdUseCase: GetItemByIdUseCase,
+    private val deletePasswordUseCase: DeleteItemUseCase
 ) : ViewModel() {
 
-    private val _password = MutableStateFlow<Password?>(null)
-    val password: StateFlow<Password?> = _password.asStateFlow()
+    private val _password = MutableStateFlow<Item?>(null)
+    val password: StateFlow<Item?> = _password.asStateFlow()
 
     private val _showPassword = MutableStateFlow(false)
     val showPassword: StateFlow<Boolean> = _showPassword.asStateFlow()
@@ -114,114 +115,117 @@ fun DetailScreen(
             }
         }
     ) { paddingValues ->
-        password?.let { pwd ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
-            ) {
-                // 서비스명
-                Text(
-                    text = "서비스명",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = pwd.serviceName,
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 아이디
-                Card(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
+        password?.let { item ->
+            when (item) {
+                is Item.Password -> {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                copyToClipboard(context, pwd.userId)
-                                showCopySnackbar = true
-                            }
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .padding(16.dp)
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "아이디",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = pwd.userId,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                        Icon(
-                            Icons.Default.ContentCopy,
-                            contentDescription = "복사",
-                            tint = MaterialTheme.colorScheme.primary
+                        // 서비스명
+                        Text(
+                            text = "서비스명",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    }
-                }
+                        Text(
+                            text = item.title,
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                // 비밀번호
-                Card(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                copyToClipboard(context, pwd.password)
-                                showCopySnackbar = true
-                            }
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "비밀번호",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = pwd.password,
-                                style = MaterialTheme.typography.bodyLarge,
-                                visualTransformation = if (showPassword) {
-                                    VisualTransformation.None
-                                } else {
-                                    PasswordVisualTransformation()
+                        // 아이디
+                        Card(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        copyToClipboard(context, item.userId)
+                                        showCopySnackbar = true
+                                    }
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "아이디",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = item.userId,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
                                 }
+                                Icon(
+                                    Icons.Default.ContentCopy,
+                                    contentDescription = "복사",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // 비밀번호
+                        Card(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        copyToClipboard(context, item.password)
+                                        showCopySnackbar = true
+                                    }
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "비밀번호",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = if (showPassword) item.password else "•".repeat(item.password.length),
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+                                Icon(
+                                    Icons.Default.ContentCopy,
+                                    contentDescription = "복사",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+
+                        if (item.memo.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "메모",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = item.memo,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }
-                        Icon(
-                            Icons.Default.ContentCopy,
-                            contentDescription = "복사",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
                     }
                 }
-
-                if (pwd.memo.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "메모",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = pwd.memo,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
+                is Item.Memo -> {
+                    // 메모 상세 화면 (나중에 구현)
+                    Text("메모 상세 화면")
                 }
             }
         }

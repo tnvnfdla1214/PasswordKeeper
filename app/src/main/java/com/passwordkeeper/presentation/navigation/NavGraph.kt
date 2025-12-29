@@ -32,12 +32,12 @@ fun NavGraph(
 
         composable(Screen.Home.route) {
             HomeScreen(
-                onPasswordClick = { passwordId ->
-                    navController.navigate(Screen.Detail.createRoute(passwordId))
+                onItemClick = {
+                    navController.navigate(Screen.Form.createRoute())
                 },
                 onAddClick = {
-                    navController.navigate(Screen.Form.createRoute())
-                }
+
+                },
             )
         }
 

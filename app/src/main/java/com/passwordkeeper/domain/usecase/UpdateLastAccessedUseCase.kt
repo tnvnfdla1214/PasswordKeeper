@@ -1,9 +1,11 @@
 package com.passwordkeeper.domain.usecase
 
+import com.passwordkeeper.domain.model.Item
+import com.passwordkeeper.domain.repository.ItemRepository
 import javax.inject.Inject
 
 class UpdateLastAccessedUseCase @Inject constructor(
-    private val repository: PasswordRepository
+    private val repository: ItemRepository
 ) {
     suspend operator fun invoke(id: Long) {
         repository.updateLastAccessedAt(id)

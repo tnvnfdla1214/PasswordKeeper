@@ -3,9 +3,10 @@ package com.passwordkeeper.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.passwordkeeper.domain.usecase.GetPasswordByIdUseCase
-import com.passwordkeeper.domain.usecase.InsertPasswordUseCase
-import com.passwordkeeper.domain.usecase.UpdatePasswordUseCase
+import com.passwordkeeper.domain.model.Item
+import com.passwordkeeper.domain.usecase.GetItemByIdUseCase
+import com.passwordkeeper.domain.usecase.InsertItemUseCase
+import com.passwordkeeper.domain.usecase.UpdateItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,9 +16,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PasswordFormViewModel @Inject constructor(
-    private val insertPasswordUseCase: InsertPasswordUseCase,
-    private val updatePasswordUseCase: UpdatePasswordUseCase,
-    private val getPasswordByIdUseCase: GetPasswordByIdUseCase,
+    private val insertPasswordUseCase: InsertItemUseCase,
+    private val updatePasswordUseCase: UpdateItemUseCase,
+    private val getPasswordByIdUseCase: GetItemByIdUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -50,9 +51,9 @@ class PasswordFormViewModel @Inject constructor(
     private fun loadPassword(id: Long) {
         viewModelScope.launch {
             getPasswordByIdUseCase(id)?.let { password ->
-                _serviceName.value = password.serviceName
-                _userId.value = password.userId
-                _password.value = password.password
+                _serviceName.value = password.title
+                _userId.value = password.memo
+                _password.value = password.title
                 _memo.value = password.memo
                 _isEditMode.value = true
             }
@@ -83,13 +84,13 @@ class PasswordFormViewModel @Inject constructor(
         viewModelScope.launch {
             _isSaving.value = true
             try {
-                val password = Password(
+                val password = Item.Password(
                     id = passwordId ?: 0,
-                    serviceName = _serviceName.value,
+                    title = _serviceName.value,
                     userId = _userId.value,
                     password = _password.value,
                     memo = _memo.value,
-                    lastModifiedAt = System.currentTimeMillis()
+                    activityTime = System.currentTimeMillis()
                 )
 
                 if (isEditMode.value) {
