@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.passwordkeeper.presentation.ui.components.SpeechBubble
 
 @Composable
 fun AuthScreen(
@@ -59,7 +60,6 @@ fun AuthScreen(
             )
 
             PasswordKeypad(
-                password = password,
                 onNumberClick = { number ->
                     if (password.length < 4) {
                         password += number.toString()
@@ -73,14 +73,11 @@ fun AuthScreen(
                 onBiometricClick = onBiometricAuth,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
             )
 
-            // 하단: 메시지
-            Text(
+            SpeechBubble(
                 text = "지문으로도 로그인할 수 있어요",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline
+                modifier = Modifier.align(Alignment.Start)
             )
         }
     }
