@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,7 +34,6 @@ fun AuthScreen(
         when (authState) {
             is AuthState.Success -> {
                 onAuthSuccess()
-                password = ""
                 viewModel.resetAuthState()
             }
             is AuthState.Error -> {
@@ -54,9 +54,8 @@ fun AuthScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            //todo : 상황에 따라 text가 변경되는 기능을 추가해야 한다
             Text(
-                text = "비밀번호를 놀러 주세요",
+                text = if (authState is AuthState.Error) "다시 한번 눌러 주세요" else "비밀번호를 놀러 주세요",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(bottom = 16.dp),
@@ -67,16 +66,14 @@ fun AuthScreen(
                 modifier = Modifier.padding(bottom = 23.dp),
             )
 
-            if (authState is AuthState.Error) {
-                Text(
-                    text = (authState as AuthState.Error).message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(bottom = 56.dp),
-                )
-            } else {
-                Spacer(modifier = Modifier.height(56.dp))
-            }
+            Text(
+                text = (authState as? AuthState.Error)?.message ?: "",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier
+                    .padding(bottom = 56.dp)
+                    .alpha(if (authState is AuthState.Error) 1f else 0f),
+            )
 
             PasswordKeypad(
                 onNumberClick = { number ->
@@ -131,7 +128,6 @@ fun PasswordIndicator(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                // 필요시 내부에 표시할 내용 추가 가능
             }
             if (index < 3) {
                 Spacer(modifier = Modifier.width(15.dp))

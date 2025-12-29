@@ -24,6 +24,7 @@ class AuthViewModel @Inject constructor(
         checkAndInitializeMasterPassword()
     }
 
+    //Todo : 추후 비밀번호 저장 화면 추가 시 제거되어야 한다.
     private fun checkAndInitializeMasterPassword() {
         viewModelScope.launch {
             try {
