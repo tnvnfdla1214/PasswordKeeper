@@ -50,7 +50,8 @@ fun PasswordKeypad(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(10.dp))
-                    .clickable { onBiometricClick() },
+                    .clickable { onBiometricClick() }
+                    .padding(vertical = 13.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -79,7 +80,8 @@ fun PasswordKeypad(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(10.dp))
-                    .clickable { onDeleteClick() },
+                    .clickable { onDeleteClick() }
+                    .padding(vertical = 13.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
