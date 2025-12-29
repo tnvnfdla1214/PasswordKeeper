@@ -9,7 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.passwordkeeper.presentation.ui.components.SpeechBubble
 
 @Composable
 fun AuthScreen(
@@ -77,7 +76,9 @@ fun AuthScreen(
 
             SpeechBubble(
                 text = "지문으로도 로그인할 수 있어요",
-                modifier = Modifier.align(Alignment.Start)
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 29.dp)
             )
         }
     }
