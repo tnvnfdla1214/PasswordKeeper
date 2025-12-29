@@ -1,10 +1,11 @@
 package com.passwordkeeper.presentation.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
@@ -12,7 +13,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.passwordkeeper.data.local.entity.ItemType
 import com.passwordkeeper.domain.model.Item
@@ -23,56 +29,37 @@ import com.passwordkeeper.presentation.viewmodel.HomeViewModel
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onItemClick: (Long) -> Unit,
-    onAddClick: (ItemType) -> Unit // 타입을 전달
+    onAddClick: (ItemType) -> Unit
 ) {
     val items by viewModel.items.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-    val selectedType by viewModel.selectedType.collectAsState()
 
     var showTypeMenu by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("비밀번호 저장소") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            )
-        },
-        floatingActionButton = {
-            // 타입 선택 메뉴와 함께 FAB
+        bottomBar = {
             Column(
-                horizontalAlignment = Alignment.End
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 49.dp)
             ) {
-                if (showTypeMenu) {
-                    FloatingActionButton(
-                        onClick = {
-                            onAddClick(ItemType.PASSWORD)
-                            showTypeMenu = false
-                        },
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    ) {
-                        Text("비밀번호", modifier = Modifier.padding(horizontal = 16.dp))
-                    }
-
-                    FloatingActionButton(
-                        onClick = {
-                            onAddClick(ItemType.MEMO)
-                            showTypeMenu = false
-                        },
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                    ) {
-                        Text("메모", modifier = Modifier.padding(horizontal = 16.dp))
-                    }
-                }
-
-                FloatingActionButton(
-                    onClick = { showTypeMenu = !showTypeMenu }
+                Button(
+                    onClick = {
+                        //Todo : 버튼 클릭 시 Edit 화면으로 바로 이동
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF355F9B)
+                    )
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "추가")
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "추가하기",
+                        modifier = Modifier.size(12.dp),
+                        tint = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text("추가하기", color = Color.White, fontSize = 16.sp)
                 }
             }
         }
@@ -82,47 +69,62 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            // 상단 헤더 영역
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFF355F9B),
+                                Color(0xFF122035)
+                            )
+                        )
+                    )
+                    .padding(24.dp)
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(108.dp))
+                    Text(
+                        "${items.size}개의 내 정보가\n안전하게 저장돼 있어요",
+                        color = Color.White,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = 32.sp
+                    )
+                }
+            }
+
             // 검색창
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { viewModel.onSearchQueryChange(it) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                placeholder = { Text("제목, 아이디, 내용 검색") },
+                    .padding(16.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                placeholder = { Text("계정 이름을 입력해 보세요") },
                 leadingIcon = {
                     Icon(Icons.Default.Search, contentDescription = "검색")
                 },
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedContainerColor = Color(0xFFF5F5F5),
+                    unfocusedContainerColor = Color(0xFFF5F5F5)
+                )
             )
 
-            // 타입 필터 칩
-            LazyRow(
+            // 삭제 버튼
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.End
             ) {
-                item {
-                    FilterChip(
-                        selected = selectedType == null,
-                        onClick = { viewModel.onTypeSelected(null) },
-                        label = { Text("전체") }
-                    )
-                }
-                item {
-                    FilterChip(
-                        selected = selectedType == ItemType.PASSWORD,
-                        onClick = { viewModel.onTypeSelected(ItemType.PASSWORD) },
-                        label = { Text("비밀번호") }
-                    )
-                }
-                item {
-                    FilterChip(
-                        selected = selectedType == ItemType.MEMO,
-                        onClick = { viewModel.onTypeSelected(ItemType.MEMO) },
-                        label = { Text("메모") }
-                    )
+                TextButton(onClick = { /* 삭제 로직 추가 */ }) {
+                    Text("삭제", color = Color.Gray, fontSize = 14.sp)
                 }
             }
 
@@ -154,6 +156,7 @@ fun HomeScreen(
                                     onItemClick(item.id)
                                 }
                             )
+
                             is Item.Memo -> MemoListItem(
                                 memo = item,
                                 onClick = {
