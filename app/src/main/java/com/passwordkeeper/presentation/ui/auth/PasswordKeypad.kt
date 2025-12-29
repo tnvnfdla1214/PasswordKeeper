@@ -1,15 +1,10 @@
 package com.passwordkeeper.presentation.ui.auth
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Backspace
-import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +17,6 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun PasswordKeypad(
-    password: String,
     onNumberClick: (Int) -> Unit,
     onDeleteClick: () -> Unit,
     onBiometricClick: () -> Unit,
@@ -88,7 +82,7 @@ fun PasswordKeypad(
                     .weight(1f)
                     .aspectRatio(1f)
                     .clip(CircleShape)
-                    .clickable { onBiometricClick() },
+                    .clickable { onDeleteClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Image(
