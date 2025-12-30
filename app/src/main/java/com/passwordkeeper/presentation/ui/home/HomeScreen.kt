@@ -69,7 +69,7 @@ fun HomeScreen(
             )
 
             HomeContentSection(
-                contentOffsetY = contentOffsetY,
+                isSearchFocused = isSearchFocused,
                 searchQuery = searchQuery,
                 onSearchQueryChange = { viewModel.onSearchQueryChange(it) },
                 onSearchFocusChanged = { isSearchFocused = it },
@@ -122,7 +122,7 @@ fun HomeHeaderSection(
 
 @Composable
 fun BoxScope.HomeContentSection(
-    contentOffsetY: androidx.compose.ui.unit.Dp,
+    isSearchFocused: Boolean,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onSearchFocusChanged: (Boolean) -> Unit,
@@ -130,6 +130,11 @@ fun BoxScope.HomeContentSection(
     focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
 ) {
+    val contentOffsetY by animateDpAsState(
+        targetValue = if (isSearchFocused) (-120).dp else 0.dp,
+        label = "contentOffsetY"
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -139,7 +144,7 @@ fun BoxScope.HomeContentSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .offset(y = 180.dp + contentOffsetY),
+                .offset(y = 210.dp + contentOffsetY),
             shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
             shadowElevation = 4.dp,
             color = MaterialTheme.colorScheme.background
