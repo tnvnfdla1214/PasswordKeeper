@@ -49,41 +49,38 @@ fun HomeScreen(
         focusManager.clearFocus()
     }
 
-    Scaffold(
-        bottomBar = {
-            HomeBottomScaffoldButton()
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        0.0f to Color(0xFF355F9B),
-                        0.2f to Color(0xFF122035)
-                    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    0.0f to Color(0xFF355F9B),
+                    0.2f to Color(0xFF122035)
                 )
-                .padding(paddingValues)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) { focusManager.clearFocus() }
-        ) {
-            HomeContentSection(
-                itemsSize = items.size,
-                isSearchFocused = isSearchFocused,
-                searchQuery = searchQuery,
-                onSearchQueryChange = { viewModel.onSearchQueryChange(it) },
-                onSearchFocusChanged = { isSearchFocused = it },
-                passwords = items,
-                focusManager = focusManager,
-                onItemClick = { itemId ->
-                    focusManager.clearFocus()
-                    viewModel.updateLastAccessed(itemId)
-                    onItemClick(itemId)
-                }
             )
-        }
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { focusManager.clearFocus() }
+    ) {
+        HomeContentSection(
+            itemsSize = items.size,
+            isSearchFocused = isSearchFocused,
+            searchQuery = searchQuery,
+            onSearchQueryChange = { viewModel.onSearchQueryChange(it) },
+            onSearchFocusChanged = { isSearchFocused = it },
+            passwords = items,
+            focusManager = focusManager,
+            onItemClick = { itemId ->
+                focusManager.clearFocus()
+                viewModel.updateLastAccessed(itemId)
+                onItemClick(itemId)
+            }
+        )
+
+        HomeBottomScaffoldButton(
+            modifier = Modifier.align(Alignment.BottomEnd)
+        )
     }
 }
 
@@ -370,29 +367,25 @@ fun HomePasswordList(
 }
 
 @Composable
-fun HomeBottomScaffoldButton() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 49.dp)
+fun HomeBottomScaffoldButton(
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = {
+            //Todo : 버튼 클릭 시 Edit 화면 상위에 뜨기
+        },
+        modifier = modifier.padding(end = 16.dp, bottom = 102.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF355F9B)
+        )
     ) {
-        Button(
-            onClick = {
-                //Todo : 버튼 클릭 시 Edit 화면으로 바로 이동
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF355F9B)
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "추가하기",
-                modifier = Modifier.size(12.dp),
-                tint = Color.White
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text("추가하기", color = Color.White, fontSize = 16.sp)
-        }
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "추가하기",
+            modifier = Modifier.size(12.dp),
+            tint = Color.White
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text("추가하기", color = Color.White, fontSize = 16.sp)
     }
 }
