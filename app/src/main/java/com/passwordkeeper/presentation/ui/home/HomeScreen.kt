@@ -1,5 +1,6 @@
 package com.passwordkeeper.presentation.ui.home
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,11 +15,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.passwordkeeper.data.local.entity.ItemType
 import com.passwordkeeper.domain.model.Item
@@ -35,6 +38,13 @@ fun HomeScreen(
     val searchQuery by viewModel.searchQuery.collectAsState()
 
     var showTypeMenu by remember { mutableStateOf(false) }
+    var isSearchFocused by remember { mutableStateOf(false) }
+
+    // 하단 컨텐츠 영역 오프셋 애니메이션
+    val contentOffsetY by animateDpAsState(
+        targetValue = if (isSearchFocused) (-120).dp else 0.dp,
+        label = "contentOffsetY"
+    )
 
     Scaffold(
         bottomBar = {
@@ -98,6 +108,9 @@ fun HomeScreen(
             Column (
                 modifier = Modifier
                     .fillMaxSize()
+                    .zIndex(1f)
+                    .offset(y = contentOffsetY)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 OutlinedTextField(
                     value = searchQuery,
@@ -105,7 +118,10 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .clip(RoundedCornerShape(8.dp)),
+                        .clip(RoundedCornerShape(8.dp))
+                        .onFocusChanged { focusState ->
+                            isSearchFocused = focusState.isFocused
+                        },
                     placeholder = { Text("계정 이름을 입력해 보세요") },
                     leadingIcon = {
                         Icon(Icons.Default.Search, contentDescription = "검색")
