@@ -8,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.ads.MobileAds
 import com.passwordkeeper.presentation.navigation.NavGraph
 import com.passwordkeeper.presentation.ui.theme.PasswordKeeperTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,6 +17,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // AdMob 초기화
+        MobileAds.initialize(this) {}
+
         setContent {
             PasswordKeeperTheme {
                 Surface(

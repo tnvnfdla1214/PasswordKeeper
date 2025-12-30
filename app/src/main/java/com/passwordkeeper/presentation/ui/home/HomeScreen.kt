@@ -26,8 +26,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.passwordkeeper.data.local.entity.ItemType
 import com.passwordkeeper.domain.model.Item
 import com.passwordkeeper.presentation.viewmodel.HomeViewModel
@@ -152,6 +155,10 @@ fun BoxScope.HomeContentSection(
                     searchQuery = searchQuery,
                     onSearchQueryChange = onSearchQueryChange,
                     onSearchFocusChanged = onSearchFocusChanged
+                )
+
+                HomeAdBanner(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
 
                 HomeDeleteButton(
@@ -349,6 +356,23 @@ fun HomeDeleteButton(
             Text("삭제", color = Color.Gray, fontSize = 14.sp)
         }
     }
+}
+
+@Composable
+fun HomeAdBanner(
+    modifier: Modifier = Modifier
+) {
+    AndroidView(
+        modifier = modifier.fillMaxWidth(),
+        factory = { context ->
+            AdView(context).apply {
+                setAdSize(AdSize.BANNER)
+                // TODO: 실제 광고 ID로 교체 필요
+                adUnitId = "ca-app-pub-3940256099942544/6300978111" // 테스트 광고 ID
+                loadAd(AdRequest.Builder().build())
+            }
+        }
+    )
 }
 
 @Composable
