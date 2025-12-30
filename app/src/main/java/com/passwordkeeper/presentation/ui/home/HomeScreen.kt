@@ -20,6 +20,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -61,14 +63,18 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF355F9B),
+                            Color(0xFF122035)
+                        )
+                    )
+                )
                 .padding(paddingValues)
         ) {
-            HomeHeaderSection(
-                itemsSize = items.size,
-                focusManager = focusManager
-            )
-
             HomeContentSection(
+                itemsSize = items.size,
                 isSearchFocused = isSearchFocused,
                 searchQuery = searchQuery,
                 onSearchQueryChange = { viewModel.onSearchQueryChange(it) },
@@ -86,42 +92,8 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeHeaderSection(
-    itemsSize: Int,
-    focusManager: androidx.compose.ui.focus.FocusManager
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF355F9B),
-                        Color(0xFF122035)
-                    )
-                )
-            )
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) { focusManager.clearFocus() }
-            .padding(24.dp)
-    ) {
-        Column {
-            Spacer(modifier = Modifier.height(108.dp))
-            Text(
-                "${itemsSize}개의 내 정보가\n안전하게 저장돼 있어요",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                lineHeight = 32.sp
-            )
-        }
-    }
-}
-
-@Composable
 fun BoxScope.HomeContentSection(
+    itemsSize: Int,
     isSearchFocused: Boolean,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
@@ -130,8 +102,12 @@ fun BoxScope.HomeContentSection(
     focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
 ) {
+    var headerHeight by remember { mutableStateOf(0.dp) }
+    var textHeight by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
+    val textSpacer = 21.dp
     val contentOffsetY by animateDpAsState(
-        targetValue = if (isSearchFocused) (-120).dp else 0.dp,
+        targetValue = if (isSearchFocused) -textHeight - textSpacer else textSpacer,
         label = "contentOffsetY"
     )
 
@@ -140,11 +116,34 @@ fun BoxScope.HomeContentSection(
             .fillMaxSize()
             .align(Alignment.TopStart)
     ) {
+        Column(
+            modifier = Modifier
+                .onGloballyPositioned { coordinates ->
+                    with(density) {
+                        headerHeight = coordinates.size.height.toDp()
+                    }
+                }
+                .padding(bottom = textSpacer)
+        ) {
+            Spacer(modifier = Modifier.height(108.dp))
+            Text(
+                "${itemsSize}개의 내 정보가\n안전하게 저장돼 있어요",
+                color = Color.White,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 32.sp,
+                modifier = Modifier.onGloballyPositioned { coordinates ->
+                    with(density) {
+                        textHeight = coordinates.size.height.toDp()
+                    }
+                }
+            )
+        }
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .offset(y = 210.dp + contentOffsetY),
+                .offset(y = headerHeight + contentOffsetY),
             shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
             shadowElevation = 4.dp,
             color = MaterialTheme.colorScheme.background
