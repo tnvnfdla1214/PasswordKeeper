@@ -106,7 +106,7 @@ fun BoxScope.HomeContentSection(
     val density = LocalDensity.current
     val textSpacer = 21.dp
     val contentOffsetY by animateDpAsState(
-        targetValue = if (isSearchFocused) - textHeight - textSpacer else textSpacer,
+        targetValue = if (isSearchFocused) -textHeight - textSpacer else textSpacer,
         label = "contentOffsetY"
     )
 
@@ -131,11 +131,13 @@ fun BoxScope.HomeContentSection(
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 lineHeight = 32.sp,
-                modifier = Modifier.onGloballyPositioned { coordinates ->
-                    with(density) {
-                        textHeight = coordinates.size.height.toDp()
+                modifier = Modifier
+                    .onGloballyPositioned { coordinates ->
+                        with(density) {
+                            textHeight = coordinates.size.height.toDp()
+                        }
                     }
-                }.padding(start = 21.dp)
+                    .padding(start = 21.dp)
             )
         }
         Surface(
@@ -148,62 +150,32 @@ fun BoxScope.HomeContentSection(
             color = MaterialTheme.colorScheme.background
         ) {
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp)
             ) {
                 HomeSearchField(
-                    modifier = Modifier.padding(18.dp),
+                    modifier = Modifier.padding(top = 18.dp),
                     searchQuery = searchQuery,
                     onSearchQueryChange = onSearchQueryChange,
                     onSearchFocusChanged = onSearchFocusChanged
                 )
 
                 HomeAdBanner(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    modifier = Modifier.padding(top = 16.dp)
                 )
 
                 HomeDeleteButton(
-                    modifier = Modifier.padding(bottom = 8.dp),
+                    modifier = Modifier.padding(top = 24.dp),
                     focusManager = focusManager
                 )
 
-                // 아이템 리스트
-                if (items.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null
-                            ) { focusManager.clearFocus() },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = if (searchQuery.isBlank()) "저장된 항목이 없습니다" else "검색 결과가 없습니다",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        items(items, key = { it.id }) { item ->
-                            when (item) {
-                                is Item.Password -> PasswordListItem(
-                                    password = item,
-                                    onClick = { onItemClick(item.id) }
-                                )
-
-                                is Item.Memo -> MemoListItem(
-                                    memo = item,
-                                    onClick = { onItemClick(item.id) }
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-                    }
-        }
+                HomeItemList(
+                    items = items,
+                    searchQuery = searchQuery,
+                    focusManager = focusManager,
+                    onItemClick = onItemClick
+                )
             }
         }
     }
@@ -348,8 +320,7 @@ fun HomeDeleteButton(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
-            ) { focusManager.clearFocus() }
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            ) { focusManager.clearFocus() },
         horizontalArrangement = Arrangement.End
     ) {
         TextButton(onClick = { /* 삭제 로직 추가 */ }) {
@@ -373,6 +344,52 @@ fun HomeAdBanner(
             }
         }
     )
+}
+
+@Composable
+fun HomeItemList(
+    items: List<Item>,
+    searchQuery: String,
+    focusManager: androidx.compose.ui.focus.FocusManager,
+    onItemClick: (Long) -> Unit
+) {
+    if (items.isEmpty()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { focusManager.clearFocus() },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = if (searchQuery.isBlank()) "저장된 항목이 없습니다" else "검색 결과가 없습니다",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            items(items, key = { it.id }) { item ->
+                when (item) {
+                    is Item.Password -> PasswordListItem(
+                        password = item,
+                        onClick = { onItemClick(item.id) }
+                    )
+
+                    is Item.Memo -> MemoListItem(
+                        memo = item,
+                        onClick = { onItemClick(item.id) }
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    }
 }
 
 @Composable
