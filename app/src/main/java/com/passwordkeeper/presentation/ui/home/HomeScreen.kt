@@ -65,10 +65,8 @@ fun HomeScreen(
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF355F9B),
-                            Color(0xFF122035)
-                        )
+                        0.0f to Color(0xFF355F9B),
+                        0.2f to Color(0xFF122035)
                     )
                 )
                 .padding(paddingValues)
