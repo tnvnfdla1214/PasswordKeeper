@@ -3,6 +3,7 @@ package com.passwordkeeper.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.passwordkeeper.domain.model.Password
 import com.passwordkeeper.domain.usecase.GetPasswordByIdUseCase
 import com.passwordkeeper.domain.usecase.InsertPasswordUseCase
 import com.passwordkeeper.domain.usecase.UpdatePasswordUseCase
@@ -83,7 +84,7 @@ class PasswordFormViewModel @Inject constructor(
         viewModelScope.launch {
             _isSaving.value = true
             try {
-                val password = Item.Password(
+                val password = Password(
                     id = passwordId ?: 0,
                     title = _serviceName.value,
                     userId = _userId.value,

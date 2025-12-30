@@ -1,9 +1,11 @@
 package com.passwordkeeper.presentation.viewmodel
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.passwordkeeper.domain.model.ItemType
+import com.passwordkeeper.domain.model.Password
 import com.passwordkeeper.domain.usecase.GetPasswordByIdUseCase
 import com.passwordkeeper.domain.usecase.InsertPasswordUseCase
 import com.passwordkeeper.domain.usecase.UpdatePasswordUseCase
@@ -67,21 +69,11 @@ class ItemFormViewModel @Inject constructor(
     private fun loadItem(id: Long) {
         viewModelScope.launch {
             getPasswordByIdUseCase(id)?.let { item ->
-                when (item) {
-                    is Item.Password -> {
-                        _itemType.value = ItemType.PASSWORD
-                        _title.value = item.title
-                        _userId.value = item.userId
-                        _password.value = item.password
-                        _memo.value = item.memo
-                    }
-                    is Item.Memo -> {
-                        _itemType.value = ItemType.MEMO
-                        _title.value = item.title
-                        _content.value = item.content
-                        _memo.value = item.memo
-                    }
-                }
+                _itemType.value = ItemType.PASSWORD
+                _title.value = item.title
+                _userId.value = item.userId
+                _password.value = item.password
+                _memo.value = item.memo
                 _isEditMode.value = true
             }
         }
@@ -131,23 +123,14 @@ class ItemFormViewModel @Inject constructor(
         viewModelScope.launch {
             _isSaving.value = true
             try {
-                val item = when (itemType.value) {
-                    ItemType.PASSWORD -> Item.Password(
-                        id = itemId ?: 0,
-                        title = _title.value,
-                        userId = _userId.value,
-                        password = _password.value,
-                        memo = _memo.value,
-                        activityTime = System.currentTimeMillis() // 등록/수정 시 업데이트
-                    )
-                    ItemType.MEMO -> Item.Memo(
-                        id = itemId ?: 0,
-                        title = _title.value,
-                        content = _content.value,
-                        memo = _memo.value,
-                        activityTime = System.currentTimeMillis() // 등록/수정 시 업데이트
-                    )
-                }
+                val item = Password(
+                    id = itemId ?: 0,
+                    title = _title.value,
+                    userId = _userId.value,
+                    password = _password.value,
+                    memo = _memo.value,
+                    activityTime = System.currentTimeMillis(),
+                )
 
                 if (isEditMode.value) {
                     updatePasswordUseCase(item)

@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -31,6 +32,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.passwordkeeper.domain.model.ItemType
+import com.passwordkeeper.domain.model.Password
 import com.passwordkeeper.presentation.viewmodel.HomeViewModel
 
 @Composable
@@ -95,7 +97,7 @@ fun BoxScope.HomeContentSection(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onSearchFocusChanged: (Boolean) -> Unit,
-    items: List<Item>,
+    items: List<Password>,
     focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
 ) {
@@ -169,7 +171,7 @@ fun BoxScope.HomeContentSection(
                 )
 
                 HomeItemList(
-                    items = items,
+                    passwords = items,
                     searchQuery = searchQuery,
                     focusManager = focusManager,
                     onItemClick = onItemClick
@@ -181,7 +183,7 @@ fun BoxScope.HomeContentSection(
 
 @Composable
 fun HomeListItem(
-    item: Item,
+    password: Password,
     onClick: () -> Unit
 ) {
     Card(
@@ -206,12 +208,12 @@ fun HomeListItem(
 
                 Column {
                     Text(
-                        text = item.title,
+                        text = password.title,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     Text(
-                        text = item.memo,
+                        text = password.memo,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
                     )
@@ -224,7 +226,7 @@ fun HomeListItem(
 
 @Composable
 fun PasswordListItem(
-    password: Item.Password,
+    password: Password,
     onClick: () -> Unit
 ) {
     Card(
@@ -271,51 +273,6 @@ fun PasswordListItem(
                     color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f)
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun MemoListItem(
-    memo: Item.Memo,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = memo.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
-                )
-                Text(
-                    text = "메모",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = memo.content.take(50) + if (memo.content.length > 50) "..." else "",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
-            )
         }
     }
 }
@@ -389,12 +346,12 @@ fun HomeAdBanner(
 
 @Composable
 fun HomeItemList(
-    items: List<Item>,
+    passwords: List<Password>,
     searchQuery: String,
     focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
 ) {
-    if (items.isEmpty()) {
+    if (passwords.isEmpty()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -415,18 +372,14 @@ fun HomeItemList(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            items(items, key = { it.id }) { item ->
-                when (item) {
-                    is Item.Password -> PasswordListItem(
-                        password = item,
-                        onClick = { onItemClick(item.id) }
-                    )
-
-                    is Item.Memo -> MemoListItem(
-                        memo = item,
-                        onClick = { onItemClick(item.id) }
-                    )
-                }
+            items(
+                items = passwords,
+                key = { it.id }
+            ) { password ->
+                PasswordListItem(
+                    password = password,
+                    onClick = { onItemClick(password.id) }
+                )
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }

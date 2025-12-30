@@ -62,7 +62,6 @@ class PasswordRepositoryImpl @Inject constructor(
             password = encryptionManager.decrypt(encryptedPassword),
             memo = memo,
             activityTime = activityTime,
-            type = if (userId.isNotEmpty()) ItemType.PASSWORD else ItemType.MEMO
         )
     }
 

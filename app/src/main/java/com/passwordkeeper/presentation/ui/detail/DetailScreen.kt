@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.passwordkeeper.domain.model.Password
 import com.passwordkeeper.domain.usecase.DeleteIPasswordUseCase
 import com.passwordkeeper.domain.usecase.GetPasswordByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,8 +35,8 @@ class DetailViewModel @Inject constructor(
     private val deletePasswordUseCase: DeleteIPasswordUseCase
 ) : ViewModel() {
 
-    private val _password = MutableStateFlow<Item?>(null)
-    val password: StateFlow<Item?> = _password.asStateFlow()
+    private val _password = MutableStateFlow<Password?>(null)
+    val password: StateFlow<Password?> = _password.asStateFlow()
 
     private val _showPassword = MutableStateFlow(false)
     val showPassword: StateFlow<Boolean> = _showPassword.asStateFlow()
@@ -113,116 +114,108 @@ fun DetailScreen(
         }
     ) { paddingValues ->
         password?.let { item ->
-            when (item) {
-                is Item.Password -> {
-                    Column(
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+            ) {
+                // 서비스명
+                Text(
+                    text = "서비스명",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = item.title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 아이디
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                            .padding(16.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                copyToClipboard(context, item.userId)
+                                showCopySnackbar = true
+                            }
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // 서비스명
-                        Text(
-                            text = "서비스명",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Text(
-                            text = item.title,
-                            style = MaterialTheme.typography.headlineSmall,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // 아이디
-                        Card(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        copyToClipboard(context, item.userId)
-                                        showCopySnackbar = true
-                                    }
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = "아이디",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = item.userId,
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-                                }
-                                Icon(
-                                    Icons.Default.ContentCopy,
-                                    contentDescription = "복사",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // 비밀번호
-                        Card(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        copyToClipboard(context, item.password)
-                                        showCopySnackbar = true
-                                    }
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = "비밀번호",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = if (showPassword) item.password else "•".repeat(item.password.length),
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-                                }
-                                Icon(
-                                    Icons.Default.ContentCopy,
-                                    contentDescription = "복사",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-
-                        if (item.memo.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "메모",
+                                text = "아이디",
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = item.memo,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(vertical = 8.dp)
+                                text = item.userId,
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
+                        Icon(
+                            Icons.Default.ContentCopy,
+                            contentDescription = "복사",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
-                is Item.Memo -> {
-                    // 메모 상세 화면 (나중에 구현)
-                    Text("메모 상세 화면")
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // 비밀번호
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                copyToClipboard(context, item.password)
+                                showCopySnackbar = true
+                            }
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "비밀번호",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = if (showPassword) item.password else "•".repeat(item.password.length),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                        Icon(
+                            Icons.Default.ContentCopy,
+                            contentDescription = "복사",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
+                if (item.memo.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "메모",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = item.memo,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 }
             }
         }

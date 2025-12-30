@@ -7,5 +7,5 @@ data class Password(
     val password: String = "",
     val memo: String = "",
     val activityTime: Long = System.currentTimeMillis(),
-    val type: ItemType,
+    val type: ItemType = if (userId.isNotEmpty()) ItemType.PASSWORD else ItemType.MEMO
 )

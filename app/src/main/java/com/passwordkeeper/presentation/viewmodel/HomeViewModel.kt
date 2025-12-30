@@ -3,6 +3,7 @@ package com.passwordkeeper.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.passwordkeeper.domain.model.ItemType
+import com.passwordkeeper.domain.model.Password
 import com.passwordkeeper.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -12,9 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getAllPasswordsUseCase: GetAllPasswordsUseCase,
-    private val getItemsByTypeUseCase: GetItemsByTypeUseCase,
     private val searchItemsUseCase: SearchItemsUseCase,
-    private val searchPasswordsByTypeUseCase: SearchPasswordsByTypeUseCase,
     private val deleteIPasswordUseCase: DeleteIPasswordUseCase,
     private val updateLastAccessedUseCase: UpdateLastAccessedUseCase
 ) : ViewModel() {
@@ -25,7 +24,7 @@ class HomeViewModel @Inject constructor(
     private val _selectedType = MutableStateFlow<ItemType?>(null) // null = 전체
     val selectedType: StateFlow<ItemType?> = _selectedType.asStateFlow()
 
-    val items: StateFlow<List<Item>> = combine(
+    val items: StateFlow<List<Password>> = combine(
         searchQuery.debounce(300),
         selectedType
     ) { query, type ->
@@ -33,9 +32,7 @@ class HomeViewModel @Inject constructor(
     }.flatMapLatest { (query, type) ->
         when {
             query.isBlank() && type == null -> getAllPasswordsUseCase()
-            query.isBlank() && type != null -> getItemsByTypeUseCase(type)
             query.isNotBlank() && type == null -> searchItemsUseCase(query)
-            query.isNotBlank() && type != null -> searchPasswordsByTypeUseCase(type, query)
             else -> getAllPasswordsUseCase()
         }
     }.stateIn(
@@ -52,9 +49,9 @@ class HomeViewModel @Inject constructor(
         _selectedType.value = type
     }
 
-    fun deleteItem(item: Item) {
+    fun deleteItem(password: Password) {
         viewModelScope.launch {
-            deleteIPasswordUseCase(item)
+            deleteIPasswordUseCase(password)
         }
     }
 
