@@ -3,6 +3,7 @@ package com.passwordkeeper.presentation.ui.home
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +41,7 @@ fun HomeScreen(
 
     var showTypeMenu by remember { mutableStateOf(false) }
     var isSearchFocused by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
     // 하단 컨텐츠 영역 오프셋 애니메이션
     val contentOffsetY by animateDpAsState(
@@ -91,6 +94,10 @@ fun HomeScreen(
                             )
                         )
                     )
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { focusManager.clearFocus() }
                     .padding(24.dp)
             ) {
                 Column {
@@ -139,6 +146,10 @@ fun HomeScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { focusManager.clearFocus() }
                         .padding(horizontal = 16.dp, vertical = 4.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
@@ -152,7 +163,12 @@ fun HomeScreen(
                 // 아이템 리스트
                 if (items.isEmpty()) {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { focusManager.clearFocus() },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -171,6 +187,7 @@ fun HomeScreen(
                                 is Item.Password -> PasswordListItem(
                                     password = item,
                                     onClick = {
+                                        focusManager.clearFocus()
                                         viewModel.updateLastAccessed(item.id)
                                         onItemClick(item.id)
                                     }
@@ -179,6 +196,7 @@ fun HomeScreen(
                                 is Item.Memo -> MemoListItem(
                                     memo = item,
                                     onClick = {
+                                        focusManager.clearFocus()
                                         viewModel.updateLastAccessed(item.id)
                                         onItemClick(item.id)
                                     }
