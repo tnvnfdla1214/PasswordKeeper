@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -31,8 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
-import com.passwordkeeper.data.local.entity.ItemType
-import com.passwordkeeper.domain.model.Item
+import com.passwordkeeper.domain.model.ItemType
 import com.passwordkeeper.presentation.viewmodel.HomeViewModel
 
 @Composable

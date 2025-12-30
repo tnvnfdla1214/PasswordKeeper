@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.passwordkeeper.data.local.AppDatabase
 import com.passwordkeeper.data.local.dao.PasswordDao
-import com.passwordkeeper.data.local.dao.MemoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,11 +33,5 @@ object DatabaseModule {
     @Singleton
     fun providePasswordDao(database: AppDatabase): PasswordDao {
         return database.passwordDao()
-    }
-
-    @Provides
-    @Singleton
-    fun provideMemoDao(database: AppDatabase): MemoDao {
-        return database.memoDao()
     }
 }

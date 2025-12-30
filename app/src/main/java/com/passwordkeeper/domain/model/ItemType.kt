@@ -1,4 +1,4 @@
-package com.passwordkeeper.data.local.entity
+package com.passwordkeeper.domain.model
 
 enum class ItemType {
     MEMO,      // 메모 타입

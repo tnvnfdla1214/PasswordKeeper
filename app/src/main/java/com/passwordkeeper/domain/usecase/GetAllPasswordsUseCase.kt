@@ -5,10 +5,10 @@ import com.passwordkeeper.domain.repository.PasswordRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class SearchItemsUseCase @Inject constructor(
+class GetAllPasswordsUseCase @Inject constructor(
     private val repository: PasswordRepository
 ) {
-    operator fun invoke(query: String): Flow<List<Password>> {
-        return repository.searchPasswords(query)
+    operator fun invoke(): Flow<List<Password>> {
+        return repository.getAllPassword()
     }
 }

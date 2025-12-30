@@ -6,14 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.passwordkeeper.domain.usecase.HasMasterPasswordUseCase
 import com.passwordkeeper.domain.usecase.SaveMasterPasswordUseCase
-import com.passwordkeeper.domain.usecase.VerifyPasswordUseCase
+import com.passwordkeeper.domain.usecase.VerifyMasterPasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val verifyPasswordUseCase: VerifyPasswordUseCase,
+    private val verifyMasterPasswordUseCase: VerifyMasterPasswordUseCase,
     private val saveMasterPasswordUseCase: SaveMasterPasswordUseCase,
     private val hasMasterPasswordUseCase: HasMasterPasswordUseCase
 ) : ViewModel() {
@@ -42,7 +42,7 @@ class AuthViewModel @Inject constructor(
     fun validatePassword(password: String) {
         viewModelScope.launch {
             try {
-                val isValid = verifyPasswordUseCase(password)
+                val isValid = verifyMasterPasswordUseCase(password)
                 if (isValid) {
                     _authState.value = AuthState.Success
                 } else {

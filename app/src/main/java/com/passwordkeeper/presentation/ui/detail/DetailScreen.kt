@@ -15,15 +15,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.passwordkeeper.domain.model.Item
-import com.passwordkeeper.domain.usecase.DeleteItemUseCase
-import com.passwordkeeper.domain.usecase.GetItemByIdUseCase
+import com.passwordkeeper.domain.usecase.DeleteIPasswordUseCase
+import com.passwordkeeper.domain.usecase.GetPasswordByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,8 +30,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val getPasswordByIdUseCase: GetItemByIdUseCase,
-    private val deletePasswordUseCase: DeleteItemUseCase
+    private val getPasswordByIdUseCase: GetPasswordByIdUseCase,
+    private val deletePasswordUseCase: DeleteIPasswordUseCase
 ) : ViewModel() {
 
     private val _password = MutableStateFlow<Item?>(null)

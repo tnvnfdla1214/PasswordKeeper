@@ -2,8 +2,7 @@ package com.passwordkeeper.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.passwordkeeper.data.local.entity.ItemType
-import com.passwordkeeper.domain.model.Item
+import com.passwordkeeper.domain.model.ItemType
 import com.passwordkeeper.domain.usecase.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -12,11 +11,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getAllItemsUseCase: GetAllItemsUseCase,
+    private val getAllPasswordsUseCase: GetAllPasswordsUseCase,
     private val getItemsByTypeUseCase: GetItemsByTypeUseCase,
     private val searchItemsUseCase: SearchItemsUseCase,
-    private val searchItemsByTypeUseCase: SearchItemsByTypeUseCase,
-    private val deleteItemUseCase: DeleteItemUseCase,
+    private val searchPasswordsByTypeUseCase: SearchPasswordsByTypeUseCase,
+    private val deleteIPasswordUseCase: DeleteIPasswordUseCase,
     private val updateLastAccessedUseCase: UpdateLastAccessedUseCase
 ) : ViewModel() {
 
@@ -33,11 +32,11 @@ class HomeViewModel @Inject constructor(
         Pair(query, type)
     }.flatMapLatest { (query, type) ->
         when {
-            query.isBlank() && type == null -> getAllItemsUseCase()
+            query.isBlank() && type == null -> getAllPasswordsUseCase()
             query.isBlank() && type != null -> getItemsByTypeUseCase(type)
             query.isNotBlank() && type == null -> searchItemsUseCase(query)
-            query.isNotBlank() && type != null -> searchItemsByTypeUseCase(type, query)
-            else -> getAllItemsUseCase()
+            query.isNotBlank() && type != null -> searchPasswordsByTypeUseCase(type, query)
+            else -> getAllPasswordsUseCase()
         }
     }.stateIn(
         scope = viewModelScope,
@@ -55,7 +54,7 @@ class HomeViewModel @Inject constructor(
 
     fun deleteItem(item: Item) {
         viewModelScope.launch {
-            deleteItemUseCase(item)
+            deleteIPasswordUseCase(item)
         }
     }
 

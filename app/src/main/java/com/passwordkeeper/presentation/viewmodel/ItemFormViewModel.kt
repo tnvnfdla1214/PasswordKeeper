@@ -3,11 +3,10 @@ package com.passwordkeeper.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.passwordkeeper.data.local.entity.ItemType
-import com.passwordkeeper.domain.model.Item
-import com.passwordkeeper.domain.usecase.GetItemByIdUseCase
-import com.passwordkeeper.domain.usecase.InsertItemUseCase
-import com.passwordkeeper.domain.usecase.UpdateItemUseCase
+import com.passwordkeeper.domain.model.ItemType
+import com.passwordkeeper.domain.usecase.GetPasswordByIdUseCase
+import com.passwordkeeper.domain.usecase.InsertPasswordUseCase
+import com.passwordkeeper.domain.usecase.UpdatePasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,9 +16,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ItemFormViewModel @Inject constructor(
-    private val insertItemUseCase: InsertItemUseCase,
-    private val updateItemUseCase: UpdateItemUseCase,
-    private val getItemByIdUseCase: GetItemByIdUseCase,
+    private val insertPasswordUseCase: InsertPasswordUseCase,
+    private val updatePasswordUseCase: UpdatePasswordUseCase,
+    private val getPasswordByIdUseCase: GetPasswordByIdUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -67,7 +66,7 @@ class ItemFormViewModel @Inject constructor(
 
     private fun loadItem(id: Long) {
         viewModelScope.launch {
-            getItemByIdUseCase(id)?.let { item ->
+            getPasswordByIdUseCase(id)?.let { item ->
                 when (item) {
                     is Item.Password -> {
                         _itemType.value = ItemType.PASSWORD
@@ -151,9 +150,9 @@ class ItemFormViewModel @Inject constructor(
                 }
 
                 if (isEditMode.value) {
-                    updateItemUseCase(item)
+                    updatePasswordUseCase(item)
                 } else {
-                    insertItemUseCase(item)
+                    insertPasswordUseCase(item)
                 }
 
                 onSuccess()

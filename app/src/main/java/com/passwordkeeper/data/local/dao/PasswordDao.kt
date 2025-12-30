@@ -31,6 +31,9 @@ interface PasswordDao {
     @Delete
     suspend fun deletePassword(password: PasswordEntity)
 
+    @Query("DELETE FROM passwords WHERE id = :id")
+    suspend fun deletePasswordById(id: Long)
+
     @Query("UPDATE passwords SET activityTime = :timestamp WHERE id = :id")
     suspend fun updateActivityTime(id: Long, timestamp: Long = System.currentTimeMillis())
 
