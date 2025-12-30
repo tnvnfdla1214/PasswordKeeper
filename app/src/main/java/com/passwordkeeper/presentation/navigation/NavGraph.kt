@@ -35,9 +35,6 @@ fun NavGraph(
                 onItemClick = {
                     navController.navigate(Screen.Form.createRoute())
                 },
-                onAddClick = {
-
-                },
             )
         }
 

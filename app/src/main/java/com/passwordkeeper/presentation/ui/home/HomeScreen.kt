@@ -31,7 +31,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
-import com.passwordkeeper.domain.model.ItemType
 import com.passwordkeeper.domain.model.Password
 import com.passwordkeeper.presentation.viewmodel.HomeViewModel
 
@@ -39,7 +38,6 @@ import com.passwordkeeper.presentation.viewmodel.HomeViewModel
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onItemClick: (Long) -> Unit,
-    onAddClick: (ItemType) -> Unit
 ) {
     val items by viewModel.items.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -47,7 +45,6 @@ fun HomeScreen(
     var isSearchFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
-    // 검색창이 포커스되었을 때 뒤로 가기 처리
     BackHandler(enabled = isSearchFocused) {
         focusManager.clearFocus()
     }
@@ -78,7 +75,7 @@ fun HomeScreen(
                 searchQuery = searchQuery,
                 onSearchQueryChange = { viewModel.onSearchQueryChange(it) },
                 onSearchFocusChanged = { isSearchFocused = it },
-                items = items,
+                passwords = items,
                 focusManager = focusManager,
                 onItemClick = { itemId ->
                     focusManager.clearFocus()
@@ -97,7 +94,7 @@ fun BoxScope.HomeContentSection(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onSearchFocusChanged: (Boolean) -> Unit,
-    items: List<Password>,
+    passwords: List<Password>,
     focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
 ) {
@@ -171,54 +168,12 @@ fun BoxScope.HomeContentSection(
                 )
 
                 HomeItemList(
-                    passwords = items,
+                    modifier = Modifier.weight(1f),
+                    passwords = passwords,
                     searchQuery = searchQuery,
                     focusManager = focusManager,
                     onItemClick = onItemClick
                 )
-            }
-        }
-    }
-}
-
-@Composable
-fun HomeListItem(
-    password: Password,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp, bottom = 4.dp, start = 12.dp, end = 7.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Column {
-                    Text(
-                        text = password.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                    Text(
-                        text = password.memo,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
-                    )
-                }
-
             }
         }
     }
@@ -346,42 +301,69 @@ fun HomeAdBanner(
 
 @Composable
 fun HomeItemList(
+    modifier: Modifier = Modifier,
     passwords: List<Password>,
     searchQuery: String,
     focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
 ) {
     if (passwords.isEmpty()) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) { focusManager.clearFocus() },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = if (searchQuery.isBlank()) "저장된 항목이 없습니다" else "검색 결과가 없습니다",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        HomeEmptyState(
+            modifier = modifier,
+            searchQuery = searchQuery,
+            focusManager = focusManager
+        )
     } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            items(
-                items = passwords,
-                key = { it.id }
-            ) { password ->
-                PasswordListItem(
-                    password = password,
-                    onClick = { onItemClick(password.id) }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+        HomePasswordList(
+            modifier = modifier,
+            passwords = passwords,
+            onItemClick = onItemClick
+        )
+    }
+}
+
+@Composable
+fun HomeEmptyState(
+    modifier: Modifier = Modifier,
+    searchQuery: String,
+    focusManager: androidx.compose.ui.focus.FocusManager
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { focusManager.clearFocus() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = if (searchQuery.isBlank()) "저장된 항목이 없습니다" else "검색 결과가 없습니다",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+fun HomePasswordList(
+    modifier: Modifier = Modifier,
+    passwords: List<Password>,
+    onItemClick: (Long) -> Unit
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        items(
+            items = passwords,
+            key = { it.id }
+        ) { password ->
+            PasswordListItem(
+                password = password,
+                onClick = { onItemClick(password.id) }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
