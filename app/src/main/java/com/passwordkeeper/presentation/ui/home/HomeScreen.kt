@@ -331,11 +331,12 @@ fun HomeEmptyState(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .padding(top = 40.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) { focusManager.clearFocus() },
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.TopCenter
     ) {
         Text(
             text = if (searchQuery.isBlank()) "저장된 항목이 없습니다" else "검색 결과가 없습니다",
