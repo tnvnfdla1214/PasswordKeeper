@@ -58,7 +58,7 @@ fun HomeScreen(
             HomeBottomScaffoldButton()
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -121,7 +121,7 @@ fun HomeHeaderSection(
 }
 
 @Composable
-fun HomeContentSection(
+fun BoxScope.HomeContentSection(
     contentOffsetY: androidx.compose.ui.unit.Dp,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
@@ -130,14 +130,24 @@ fun HomeContentSection(
     focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .zIndex(1f)
-            .offset(y = contentOffsetY)
-            .background(MaterialTheme.colorScheme.background)
+            .align(Alignment.TopStart)
     ) {
-        OutlinedTextField(
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .offset(y = 180.dp + contentOffsetY),
+            shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
+            shadowElevation = 4.dp,
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+            OutlinedTextField(
             value = searchQuery,
             onValueChange = onSearchQueryChange,
             modifier = Modifier
@@ -214,6 +224,8 @@ fun HomeContentSection(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
+            }
+        }
             }
         }
     }
