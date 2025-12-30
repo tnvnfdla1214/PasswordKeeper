@@ -1,5 +1,6 @@
 package com.passwordkeeper.presentation.ui.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,6 +47,11 @@ fun HomeScreen(
         targetValue = if (isSearchFocused) (-120).dp else 0.dp,
         label = "contentOffsetY"
     )
+
+    // 검색창이 포커스되었을 때 뒤로 가기 처리
+    BackHandler(enabled = isSearchFocused) {
+        focusManager.clearFocus()
+    }
 
     Scaffold(
         bottomBar = {
