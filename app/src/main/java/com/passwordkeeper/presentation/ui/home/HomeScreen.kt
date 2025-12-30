@@ -44,12 +44,6 @@ fun HomeScreen(
     var isSearchFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
-    // 하단 컨텐츠 영역 오프셋 애니메이션
-    val contentOffsetY by animateDpAsState(
-        targetValue = if (isSearchFocused) (-120).dp else 0.dp,
-        label = "contentOffsetY"
-    )
-
     // 검색창이 포커스되었을 때 뒤로 가기 처리
     BackHandler(enabled = isSearchFocused) {
         focusManager.clearFocus()
@@ -70,6 +64,10 @@ fun HomeScreen(
                     )
                 )
                 .padding(paddingValues)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { focusManager.clearFocus() }
         ) {
             HomeContentSection(
                 itemsSize = items.size,
@@ -105,7 +103,7 @@ fun BoxScope.HomeContentSection(
     val density = LocalDensity.current
     val textSpacer = 21.dp
     val contentOffsetY by animateDpAsState(
-        targetValue = if (isSearchFocused) -textHeight - textSpacer else textSpacer,
+        targetValue = if (isSearchFocused) - textHeight - textSpacer else textSpacer,
         label = "contentOffsetY"
     )
 
@@ -134,7 +132,7 @@ fun BoxScope.HomeContentSection(
                     with(density) {
                         textHeight = coordinates.size.height.toDp()
                     }
-                }
+                }.padding(start = 21.dp)
             )
         }
         Surface(
@@ -149,84 +147,55 @@ fun BoxScope.HomeContentSection(
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-            OutlinedTextField(
-            value = searchQuery,
-            onValueChange = onSearchQueryChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .onFocusChanged { focusState ->
-                    onSearchFocusChanged(focusState.isFocused)
-                },
-            placeholder = { Text("계정 이름을 입력해 보세요") },
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "검색")
-            },
-            singleLine = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent,
-                focusedContainerColor = Color(0xFFF5F5F5),
-                unfocusedContainerColor = Color(0xFFF5F5F5)
-            )
-        )
-
-        // 삭제 버튼
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) { focusManager.clearFocus() }
-                .padding(horizontal = 16.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            TextButton(onClick = { /* 삭제 로직 추가 */ }) {
-                Text("삭제", color = Color.Gray, fontSize = 14.sp)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // 아이템 리스트
-        if (items.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) { focusManager.clearFocus() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = if (searchQuery.isBlank()) "저장된 항목이 없습니다" else "검색 결과가 없습니다",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                HomeSearchField(
+                    modifier = Modifier.padding(18.dp),
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = onSearchQueryChange,
+                    onSearchFocusChanged = onSearchFocusChanged
                 )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                items(items, key = { it.id }) { item ->
-                    when (item) {
-                        is Item.Password -> PasswordListItem(
-                            password = item,
-                            onClick = { onItemClick(item.id) }
-                        )
 
-                        is Item.Memo -> MemoListItem(
-                            memo = item,
-                            onClick = { onItemClick(item.id) }
+                HomeDeleteButton(
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    focusManager = focusManager
+                )
+
+                // 아이템 리스트
+                if (items.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { focusManager.clearFocus() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (searchQuery.isBlank()) "저장된 항목이 없습니다" else "검색 결과가 없습니다",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        items(items, key = { it.id }) { item ->
+                            when (item) {
+                                is Item.Password -> PasswordListItem(
+                                    password = item,
+                                    onClick = { onItemClick(item.id) }
+                                )
+
+                                is Item.Memo -> MemoListItem(
+                                    memo = item,
+                                    onClick = { onItemClick(item.id) }
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
         }
             }
         }
@@ -327,6 +296,57 @@ fun MemoListItem(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
             )
+        }
+    }
+}
+
+@Composable
+fun HomeSearchField(
+    modifier: Modifier,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onSearchFocusChanged: (Boolean) -> Unit
+) {
+    OutlinedTextField(
+        value = searchQuery,
+        onValueChange = onSearchQueryChange,
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .onFocusChanged { focusState ->
+                onSearchFocusChanged(focusState.isFocused)
+            },
+        placeholder = { Text("계정 이름을 입력해 보세요") },
+        leadingIcon = {
+            Icon(Icons.Default.Search, contentDescription = "검색")
+        },
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            focusedContainerColor = Color(0xFFF5F5F5),
+            unfocusedContainerColor = Color(0xFFF5F5F5)
+        )
+    )
+}
+
+@Composable
+fun HomeDeleteButton(
+    modifier: Modifier,
+    focusManager: androidx.compose.ui.focus.FocusManager
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { focusManager.clearFocus() }
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.End
+    ) {
+        TextButton(onClick = { /* 삭제 로직 추가 */ }) {
+            Text("삭제", color = Color.Gray, fontSize = 14.sp)
         }
     }
 }
