@@ -28,7 +28,7 @@ fun PasswordFormScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (isEditMode) "비밀번호 수정" else "비밀번호 추가") },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
@@ -41,53 +41,77 @@ fun PasswordFormScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
+                .padding(start = 16.dp, end = 16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            OutlinedTextField(
-                value = serviceName,
-                onValueChange = { viewModel.onServiceNameChange(it) },
-                label = { Text("서비스명") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+            Column {
+                Text(
+                    text = "서비스명",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                OutlinedTextField(
+                    value = serviceName,
+                    onValueChange = { viewModel.onServiceNameChange(it) },
+                    label = { },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "아이디",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(top = 21.dp, bottom = 8.dp),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
 
-            OutlinedTextField(
-                value = userId,
-                onValueChange = { viewModel.onUserIdChange(it) },
-                label = { Text("아이디") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+                OutlinedTextField(
+                    value = userId,
+                    onValueChange = { viewModel.onUserIdChange(it) },
+                    label = { },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "비밀번호",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(top = 21.dp, bottom = 8.dp),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
 
-            OutlinedTextField(
-                value = password,
-                onValueChange = { viewModel.onPasswordChange(it) },
-                label = { Text("비밀번호") },
-                modifier = Modifier.fillMaxWidth(),
-                visualTransformation = PasswordVisualTransformation(),
-                singleLine = true
-            )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { viewModel.onPasswordChange(it) },
+                    label = { },
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = PasswordVisualTransformation(),
+                    singleLine = true
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "메모",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(top = 21.dp, bottom = 8.dp),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
 
-            OutlinedTextField(
-                value = memo,
-                onValueChange = { viewModel.onMemoChange(it) },
-                label = { Text("메모 (선택)") },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 3,
-                maxLines = 5
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
+                OutlinedTextField(
+                    value = memo,
+                    onValueChange = { viewModel.onMemoChange(it) },
+                    label = { },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3,
+                    maxLines = 5
+                )
+            }
 
             Button(
                 onClick = { viewModel.savePassword(onSaveSuccess) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
                 enabled = !isSaving && serviceName.isNotBlank() && userId.isNotBlank() && password.isNotBlank()
             ) {
                 if (isSaving) {
@@ -96,7 +120,7 @@ fun PasswordFormScreen(
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 } else {
-                    Text("저장")
+                    Text("저장하기")
                 }
             }
         }
