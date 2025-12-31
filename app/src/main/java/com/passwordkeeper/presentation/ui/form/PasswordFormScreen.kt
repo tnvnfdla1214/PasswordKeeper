@@ -10,6 +10,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.passwordkeeper.presentation.ui.components.CustomDialog
+import com.passwordkeeper.presentation.ui.components.DialogType
 import com.passwordkeeper.presentation.viewmodel.PasswordFormViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,14 +31,8 @@ fun PasswordFormScreen(
 
     if (showDialog) {
         CustomDialog(
-            title = "저장하시겠습니까?",
-            button1Text = "취소",
-            button1Action = { showDialog = false },
-            button2Text = "확인",
-            button2Action = {
-                showDialog = false
-                viewModel.savePassword(onSaveSuccess)
-            }
+            type = DialogType.CONFIRM,
+            title = "내 정보가 잘 저장 되었어요",
         )
     }
 
@@ -124,7 +119,10 @@ fun PasswordFormScreen(
             }
 
             Button(
-                onClick = { showDialog = true },
+                onClick = {
+                    showDialog = true
+                    viewModel.savePassword(onSaveSuccess)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
