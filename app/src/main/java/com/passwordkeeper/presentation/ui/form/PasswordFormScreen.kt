@@ -112,16 +112,12 @@ fun PasswordFormScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
-                enabled = !isSaving && serviceName.isNotBlank() && userId.isNotBlank() && password.isNotBlank()
+                enabled = !isSaving && serviceName.isNotBlank() && (
+                    (userId.isNotBlank() && password.isNotBlank()) ||
+                    (userId.isBlank() && password.isBlank() && memo.isNotBlank())
+                )
             ) {
-                if (isSaving) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                } else {
-                    Text("저장하기")
-                }
+                Text("저장하기")
             }
         }
     }
