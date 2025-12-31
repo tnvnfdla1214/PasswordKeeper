@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -46,6 +47,9 @@ fun HomeScreen(
     var isSearchFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
+    var screenHeight by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
+
     BackHandler(enabled = isSearchFocused) {
         focusManager.clearFocus()
     }
@@ -59,14 +63,21 @@ fun HomeScreen(
                     0.2f to Color(0xFF122035)
                 )
             )
+            .onGloballyPositioned { coordinates ->
+                with(density) {
+                    screenHeight = coordinates.size.height.toDp()
+                }
+            }
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) { focusManager.clearFocus() }
     ) {
+
         HomeContentSection(
             itemsSize = items.size,
             isSearchFocused = isSearchFocused,
+            screenHeight = screenHeight,
             searchQuery = searchQuery,
             onSearchQueryChange = { viewModel.onSearchQueryChange(it) },
             onSearchFocusChanged = { isSearchFocused = it },
@@ -90,6 +101,7 @@ fun HomeScreen(
 fun BoxScope.HomeContentSection(
     itemsSize: Int,
     isSearchFocused: Boolean,
+    screenHeight: Dp,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onSearchFocusChanged: (Boolean) -> Unit,
@@ -102,7 +114,7 @@ fun BoxScope.HomeContentSection(
     val density = LocalDensity.current
     val textSpacer = 21.dp
     val contentOffsetY by animateDpAsState(
-        targetValue = if (isSearchFocused) -textHeight - textSpacer else textSpacer,
+        targetValue = if (isSearchFocused) textHeight + textSpacer else 0.dp,
         label = "contentOffsetY"
     )
 
@@ -136,14 +148,13 @@ fun BoxScope.HomeContentSection(
                     .padding(start = 21.dp)
             )
         }
-        Surface(
+        Column(
             modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .fillMaxHeight()
-                .offset(y = headerHeight + contentOffsetY),
-            shape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
-            shadowElevation = 4.dp,
-            color = MaterialTheme.colorScheme.background
+                .height(screenHeight - headerHeight + contentOffsetY)
+                .clip(RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp))
+                .background(MaterialTheme.colorScheme.background),
         ) {
             Column(
                 modifier = Modifier
