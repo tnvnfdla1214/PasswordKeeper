@@ -32,22 +32,25 @@ fun NavGraph(
 
         composable(Screen.Home.route) {
             HomeScreen(
-                onItemClick = {
-                    navController.navigate(Screen.Form.createRoute())
+                onItemClick = { passwordId ->
+                    navController.navigate(Screen.Detail.createRoute(passwordId))
                 },
+                onAddClick = {
+                    navController.navigate(Screen.Form.createRoute())
+                }
             )
         }
 
         composable(
             route = Screen.Detail.route,
             arguments = listOf(
-                navArgument("passwordId") { type = NavType.LongType }
+                navArgument("itemId") { type = NavType.LongType }
             )
         ) {
             DetailScreen(
                 onBackClick = { navController.popBackStack() },
-                onEditClick = { passwordId ->
-                    navController.navigate(Screen.Form.createRoute(passwordId))
+                onEditClick = { itemId ->
+                    navController.navigate(Screen.Form.createRoute(itemId))
                 }
             )
         }
@@ -55,9 +58,14 @@ fun NavGraph(
         composable(
             route = Screen.Form.route,
             arguments = listOf(
-                navArgument("passwordId") {
+                navArgument("itemId") {
                     type = NavType.LongType
                     defaultValue = -1L
+                },
+                navArgument("type") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
                 }
             )
         ) {

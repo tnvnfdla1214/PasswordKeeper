@@ -38,6 +38,7 @@ import com.passwordkeeper.presentation.viewmodel.HomeViewModel
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onItemClick: (Long) -> Unit,
+    onAddClick: () -> Unit
 ) {
     val items by viewModel.items.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -79,7 +80,8 @@ fun HomeScreen(
         )
 
         HomeBottomScaffoldButton(
-            modifier = Modifier.align(Alignment.BottomEnd)
+            modifier = Modifier.align(Alignment.BottomEnd),
+            onClick = onAddClick
         )
     }
 }
@@ -368,12 +370,11 @@ fun HomePasswordList(
 
 @Composable
 fun HomeBottomScaffoldButton(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Button(
-        onClick = {
-            //Todo : 버튼 클릭 시 Edit 화면 상위에 뜨기
-        },
+        onClick = onClick,
         modifier = modifier.padding(end = 16.dp, bottom = 102.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF355F9B)
