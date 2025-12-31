@@ -77,9 +77,6 @@ class PasswordFormViewModel @Inject constructor(
     }
 
     fun savePassword(onSuccess: () -> Unit) {
-        if (_serviceName.value.isBlank() || _userId.value.isBlank() || _password.value.isBlank()) {
-            return
-        }
 
         viewModelScope.launch {
             _isSaving.value = true
