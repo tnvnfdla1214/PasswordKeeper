@@ -6,7 +6,7 @@ sealed class Screen(val route: String) {
     data object Detail : Screen("detail/{itemId}") {
         fun createRoute(itemId: Long) = "detail/$itemId"
     }
-    data object Form : Screen("form?itemId={itemId}&type={type}") {
+    data object Form : Screen("form?itemId={itemId}") {
         fun createRoute(itemId: Long? = null) =
             if (itemId != null) "form?itemId=$itemId"
             else "form"
