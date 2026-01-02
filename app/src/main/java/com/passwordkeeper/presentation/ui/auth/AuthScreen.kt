@@ -74,44 +74,31 @@ fun AuthScreen(
         }
     }
 
-    Surface(
-        modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 16.dp, end = 16.dp),
     ) {
-        Column(
+        Spacer(modifier = Modifier.weight(1f))
+        // 상단 영역
+        Text(
+            text = when (authState) {
+                is AuthState.Error,AuthState.ErrorIdle -> "다시 한번 눌러 주세요"
+                else -> "비밀번호를 놀러 주세요"
+            },
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 110.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ) {
-            Text(
-                text = when (authState) {
-                    is AuthState.Error,AuthState.ErrorIdle -> "다시 한번 눌러 주세요"
-                    else -> "비밀번호를 놀러 주세요"
-                },
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(bottom = 16.dp),
-            )
+                .padding(bottom = 16.dp)
+                .align(Alignment.CenterHorizontally),
+        )
 
+        // ========== 중앙 콘텐츠 영역 ==========
+        Column {
             PasswordIndicator(
                 passwordLength = password.length,
-                modifier = Modifier.padding(bottom = 23.dp),
             )
-
-            Text(
-                text = when (authState) {
-                    is AuthState.Error, AuthState.ErrorIdle -> "비밀번호가 일치하지 않습니다"
-                    is AuthState.Success, AuthState.Idle -> ""
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier
-                    .padding(bottom = 56.dp)
-                    .alpha(if (authState is AuthState.Error || authState is AuthState.ErrorIdle) 1f else 0f),
-            )
-
+            Spacer(Modifier.height(32.dp))
             PasswordKeypad(
                 modifier = Modifier.fillMaxWidth(),
                 onNumberClick = { number ->
@@ -125,7 +112,7 @@ fun AuthScreen(
                     }
                 },
             )
-
+            Spacer(Modifier.height(32.dp))
             Image(
                 painter = painterResource(id = com.passwordkeeper.R.drawable.fingerprint),
                 contentDescription = "지문 인식",
@@ -140,7 +127,10 @@ fun AuthScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
+            Spacer(modifier = Modifier.heightIn(min = 65.dp))
         }
+
+
     }
 }
 

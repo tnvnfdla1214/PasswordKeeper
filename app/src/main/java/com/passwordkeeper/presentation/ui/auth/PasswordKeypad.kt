@@ -23,22 +23,27 @@ fun PasswordKeypad(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         KeypadRow(
             numbers = listOf(1, 2, 3),
             onNumberClick = onNumberClick
         )
 
+        Spacer(Modifier.height(12.dp))
+
         KeypadRow(
             numbers = listOf(4, 5, 6),
             onNumberClick = onNumberClick
         )
 
+        Spacer(Modifier.height(12.dp))
+
         KeypadRow(
             numbers = listOf(7, 8, 9),
             onNumberClick = onNumberClick
         )
+
+        Spacer(Modifier.height(12.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -85,23 +90,24 @@ fun PasswordKeypad(
 
 @Composable
 private fun KeypadRow(
+    modifier: Modifier = Modifier,
     numbers: List<Int>,
     onNumberClick: (Int) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         numbers.forEach { number ->
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(10.dp))
                     .clickable { onNumberClick(number) },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    modifier = Modifier.padding(vertical = 13.dp),
+                    modifier = modifier.padding(vertical = 13.dp),
                     text = number.toString(),
                     fontSize = 32.sp,
                     color = MaterialTheme.colorScheme.onSurface
