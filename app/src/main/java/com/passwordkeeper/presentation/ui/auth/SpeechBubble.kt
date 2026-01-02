@@ -25,13 +25,13 @@ fun SpeechBubble(
 ) {
     Column(
         modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .align(Alignment.Start)
+                .align(Alignment.CenterHorizontally)
                 .width(14f.dp)
                 .height(12f.dp)
-                .padding(start = 16.dp)
                 .offset(y = 1.dp)
                 .drawBehind {
                     val path = Path().apply {

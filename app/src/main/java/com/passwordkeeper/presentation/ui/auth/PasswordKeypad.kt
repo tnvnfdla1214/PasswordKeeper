@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.sp
 fun PasswordKeypad(
     onNumberClick: (Int) -> Unit,
     onDeleteClick: () -> Unit,
-    onBiometricClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -49,17 +48,7 @@ fun PasswordKeypad(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(10.dp))
-                    .clickable { onBiometricClick() }
-                    .padding(vertical = 13.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = com.passwordkeeper.R.drawable.fingerprint),
-                    contentDescription = "지문 인식",
-                    modifier = Modifier.size(49.dp),
-                )
-            }
+            )
 
             Box(
                 modifier = Modifier

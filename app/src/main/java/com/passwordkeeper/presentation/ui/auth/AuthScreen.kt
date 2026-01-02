@@ -1,7 +1,9 @@
 package com.passwordkeeper.presentation.ui.auth
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -11,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -78,7 +81,7 @@ fun AuthScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, top = 120.dp),
+                .padding(start = 16.dp, end = 16.dp, top = 110.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -110,6 +113,7 @@ fun AuthScreen(
             )
 
             PasswordKeypad(
+                modifier = Modifier.fillMaxWidth(),
                 onNumberClick = { number ->
                     if (password.length < 4) {
                         password += number.toString()
@@ -120,18 +124,21 @@ fun AuthScreen(
                         password = password.dropLast(1)
                     }
                 },
-                onBiometricClick = {
-                    handleBiometricAuth()
-                },
+            )
+
+            Image(
+                painter = painterResource(id = com.passwordkeeper.R.drawable.fingerprint),
+                contentDescription = "지문 인식",
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .size(56.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .clickable { handleBiometricAuth() }
             )
 
             SpeechBubble(
                 text = "지문으로도 로그인할 수 있어요",
                 modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(start = 29.dp)
+                    .align(Alignment.CenterHorizontally)
             )
         }
     }
