@@ -33,6 +33,7 @@ fun PasswordFormScreen(
         CustomDialog(
             type = DialogType.CONFIRM,
             title = "내 정보가 잘 저장 되었어요",
+            onDismissRequest = { showSaveDialog = false }
         )
     }
 
@@ -40,6 +41,7 @@ fun PasswordFormScreen(
         CustomDialog(
             type = DialogType.WARNING,
             title = "정말 삭제하시겠어요?",
+            onDismissRequest = { showDeleteDialog = false },
             button1Text = "취소",
             button1Action = { showDeleteDialog = false },
             button2Text = "삭제",

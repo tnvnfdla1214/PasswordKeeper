@@ -26,7 +26,7 @@ enum class DialogType(val iconRes: Int) {
 fun CustomDialog(
     title: String,
     type: DialogType = DialogType.WARNING,
-    onDismissRequest: () -> Unit = {},
+    onDismissRequest: () -> Unit,
     button1Text: String? = null,
     button1Action: (() -> Unit)? = null,
     button2Text: String? = null,
