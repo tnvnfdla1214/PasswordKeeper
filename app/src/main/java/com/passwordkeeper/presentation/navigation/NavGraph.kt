@@ -14,7 +14,7 @@ import com.passwordkeeper.presentation.ui.home.HomeScreen
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    startDestination: String = Screen.Home.route
+    startDestination: String = Screen.Auth.route
 ) {
     NavHost(
         navController = navController,
