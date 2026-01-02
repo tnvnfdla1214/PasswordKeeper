@@ -96,6 +96,7 @@ fun AuthScreen(
         // ========== 중앙 콘텐츠 영역 ==========
         Column {
             PasswordIndicator(
+                modifier = modifier.fillMaxWidth(),
                 passwordLength = password.length,
             )
             Spacer(Modifier.height(32.dp))
@@ -136,13 +137,12 @@ fun AuthScreen(
 
 @Composable
 fun PasswordIndicator(
+    modifier: Modifier = Modifier,
     passwordLength: Int,
     passwordMaxSize: Int = 4,
-    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
