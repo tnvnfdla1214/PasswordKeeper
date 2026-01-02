@@ -1,5 +1,6 @@
 package com.passwordkeeper.presentation.ui.form
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -56,8 +57,10 @@ fun PasswordFormScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { },
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(if(isEditMode) "내 정보" else "")
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
