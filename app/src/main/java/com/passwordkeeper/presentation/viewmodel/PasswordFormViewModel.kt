@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.passwordkeeper.domain.model.Password
+import com.passwordkeeper.domain.usecase.DeleteIPasswordUseCase
 import com.passwordkeeper.domain.usecase.GetPasswordByIdUseCase
 import com.passwordkeeper.domain.usecase.InsertPasswordUseCase
 import com.passwordkeeper.domain.usecase.UpdatePasswordUseCase
@@ -19,10 +20,11 @@ class PasswordFormViewModel @Inject constructor(
     private val insertPasswordUseCase: InsertPasswordUseCase,
     private val updatePasswordUseCase: UpdatePasswordUseCase,
     private val getPasswordByIdUseCase: GetPasswordByIdUseCase,
+    private val deletePasswordUseCase: DeleteIPasswordUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val passwordId: Long? = savedStateHandle.get<Long>("passwordId")
+    private var passwordId: Long? = savedStateHandle.get<Long>("passwordId")
 
     private val _serviceName = MutableStateFlow("")
     val serviceName: StateFlow<String> = _serviceName.asStateFlow()
@@ -93,12 +95,35 @@ class PasswordFormViewModel @Inject constructor(
                 if (isEditMode.value) {
                     updatePasswordUseCase(password)
                 } else {
-                    insertPasswordUseCase(password)
+                    val newId = insertPasswordUseCase(password)
+                    passwordId = newId
+                    _isEditMode.value = true
                 }
 
                 onSuccess()
             } finally {
                 _isSaving.value = false
+            }
+        }
+    }
+
+    fun deletePassword(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                passwordId?.let { id ->
+                    val password = Password(
+                        id = id,
+                        title = _serviceName.value,
+                        userId = _userId.value,
+                        password = _password.value,
+                        memo = _memo.value,
+                        activityTime = System.currentTimeMillis()
+                    )
+                    deletePasswordUseCase(password)
+                    onSuccess()
+                }
+            } catch (e: Exception) {
+                // Handle error
             }
         }
     }

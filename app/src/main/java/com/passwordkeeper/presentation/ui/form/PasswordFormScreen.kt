@@ -18,7 +18,6 @@ import com.passwordkeeper.presentation.viewmodel.PasswordFormViewModel
 fun PasswordFormScreen(
     viewModel: PasswordFormViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    onSaveSuccess: () -> Unit
 ) {
     val serviceName by viewModel.serviceName.collectAsState()
     val userId by viewModel.userId.collectAsState()
@@ -27,12 +26,29 @@ fun PasswordFormScreen(
     val isEditMode by viewModel.isEditMode.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
 
-    var showDialog by remember { mutableStateOf(false) }
+    var showSaveDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
-    if (showDialog) {
+    if (showSaveDialog) {
         CustomDialog(
             type = DialogType.CONFIRM,
             title = "내 정보가 잘 저장 되었어요",
+        )
+    }
+
+    if (showDeleteDialog) {
+        CustomDialog(
+            type = DialogType.WARNING,
+            title = "정말 삭제하시겠어요?",
+            button1Text = "취소",
+            button1Action = { showDeleteDialog = false },
+            button2Text = "삭제",
+            button2Action = {
+                viewModel.deletePassword {
+                    showDeleteDialog = false
+                    onBackClick()
+                }
+            }
         )
     }
 
@@ -118,21 +134,76 @@ fun PasswordFormScreen(
                 )
             }
 
-            Button(
-                onClick = {
-                    showDialog = true
-                    viewModel.savePassword(onSaveSuccess)
+            PasswordFormButtons(
+                isEditMode = isEditMode,
+                isSaving = isSaving,
+                serviceName = serviceName,
+                userId = userId,
+                password = password,
+                memo = memo,
+                onDeleteClick = { showDeleteDialog = true },
+                onSaveClick = {
+                    showSaveDialog = true
+                    viewModel.savePassword(onSuccess = {})
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
-                enabled = !isSaving && serviceName.isNotBlank() && (
-                    (userId.isNotBlank() && password.isNotBlank()) ||
-                    (userId.isBlank() && password.isBlank() && memo.isNotBlank())
-                )
+                onUpdateClick = { viewModel.savePassword(onSuccess = {}) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun PasswordFormButtons(
+    isEditMode: Boolean,
+    isSaving: Boolean,
+    serviceName: String,
+    userId: String,
+    password: String,
+    memo: String,
+    onDeleteClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onUpdateClick: () -> Unit
+) {
+    val isFormValid = serviceName.isNotBlank() && (
+        (userId.isNotBlank() && password.isNotBlank()) ||
+        (userId.isBlank() && password.isBlank() && memo.isNotBlank())
+    )
+
+    if (isEditMode) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Button(
+                onClick = onDeleteClick,
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                ),
+                enabled = !isSaving
             ) {
-                Text("저장하기")
+                Text("삭제하기")
             }
+
+            Button(
+                onClick = onUpdateClick,
+                modifier = Modifier.weight(1f),
+                enabled = !isSaving && isFormValid
+            ) {
+                Text("수정하기")
+            }
+        }
+    } else {
+        Button(
+            onClick = onSaveClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
+            enabled = !isSaving && isFormValid
+        ) {
+            Text("저장하기")
         }
     }
 }

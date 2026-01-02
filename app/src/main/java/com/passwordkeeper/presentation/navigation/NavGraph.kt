@@ -71,7 +71,6 @@ fun NavGraph(
         ) {
             PasswordFormScreen(
                 onBackClick = { navController.popBackStack() },
-                onSaveSuccess = { navController.popBackStack() }
             )
         }
     }
