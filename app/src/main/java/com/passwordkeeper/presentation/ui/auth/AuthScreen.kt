@@ -13,8 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.passwordkeeper.presentation.viewmodel.AuthState
@@ -59,7 +62,6 @@ fun AuthScreen(
     }
 
     LaunchedEffect(authState) {
-        Log.d("qweqwe","$authState")
         when (authState) {
             is AuthState.Success -> {
                 onAuthSuccess()
@@ -77,21 +79,25 @@ fun AuthScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 16.dp, end = 16.dp),
+            .padding(horizontal = 16.dp),
     ) {
-        Spacer(modifier = Modifier.weight(1f))
-        // 상단 영역
-        Text(
-            text = when (authState) {
-                is AuthState.Error,AuthState.ErrorIdle -> "다시 한번 눌러 주세요"
-                else -> "비밀번호를 놀러 주세요"
-            },
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .align(Alignment.CenterHorizontally),
-        )
+        Box(
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Text(
+                text = when (authState) {
+                    is AuthState.Error, AuthState.ErrorIdle -> "비밀번호가 맞지 않아요\n한 번 더 눌러주세요"
+                    else -> "비밀번호를 눌러 주세요"
+                },
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp)
+            )
+        }
 
         // ========== 중앙 콘텐츠 영역 ==========
         Column {
@@ -128,10 +134,8 @@ fun AuthScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
-            Spacer(modifier = Modifier.heightIn(min = 65.dp))
         }
-
-
+        Spacer(modifier = Modifier.weight(0.7f))
     }
 }
 
@@ -149,8 +153,8 @@ fun PasswordIndicator(
         repeat(passwordMaxSize) { index ->
             Box(
                 modifier = Modifier
-                    .size(68.dp)
-                    .clip(RoundedCornerShape(5.dp))
+                    .size(22.dp)
+                    .clip(RoundedCornerShape(99.dp))
                     .background(
                         //Todo : 입력을 받을 시 어떻게 변경될지는 아직 안정함
                         if (index < passwordLength) {
@@ -168,4 +172,5 @@ fun PasswordIndicator(
         }
     }
 }
+
 
