@@ -105,9 +105,10 @@ fun AuthScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 16.dp)
             )
         }
+
+        Spacer(Modifier.height(20.dp))
 
         // ========== 중앙 콘텐츠 영역 ==========
         Column {
@@ -115,7 +116,25 @@ fun AuthScreen(
                 modifier = modifier.fillMaxWidth(),
                 passwordLength = password.length,
             )
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(20.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "비밀번호 재 설정",
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Image(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(id = com.passwordkeeper.R.drawable.left_arrow),
+                    contentDescription = "화살표",
+                )
+            }
+
+            Spacer(Modifier.height(40.dp))
+
             PasswordKeypad(
                 modifier = Modifier.fillMaxWidth(),
                 onNumberClick = { number ->
