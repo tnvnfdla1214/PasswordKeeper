@@ -12,10 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
@@ -87,8 +91,14 @@ fun AuthScreen(
         ) {
             Text(
                 text = when (authState) {
-                    is AuthState.Error, AuthState.ErrorIdle -> "비밀번호가 맞지 않아요\n한 번 더 눌러주세요"
-                    else -> "비밀번호를 눌러 주세요"
+                    is AuthState.Error, AuthState.ErrorIdle -> buildAnnotatedString {
+                        append("비밀번호가 맞지 않아요\n")
+                        withStyle(style = SpanStyle(color = Color(0xFF355F9B))) {
+                            append(" 한 번 더 눌러")
+                        }
+                        append("주세요")
+                    }
+                    else -> buildAnnotatedString { append("비밀번호를 눌러 주세요") }
                 },
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
@@ -159,7 +169,7 @@ fun PasswordIndicator(
                     .clip(RoundedCornerShape(99.dp))
                     .background(
                         if (index < passwordLength) {
-                            androidx.compose.ui.graphics.Color(0xFF355F9B)
+                            Color(0xFF355F9B)
                         } else {
                             MaterialTheme.colorScheme.outline
                         }
