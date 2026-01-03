@@ -31,6 +31,7 @@ import com.passwordkeeper.util.BiometricAuthManager
 @Composable
 fun AuthScreen(
     onAuthSuccess: () -> Unit,
+    onResetPassword: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
@@ -119,13 +120,18 @@ fun AuthScreen(
             Spacer(Modifier.height(20.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onResetPassword() }
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "비밀번호 재 설정",
                     style = MaterialTheme.typography.titleMedium,
                 )
+                Spacer(modifier = Modifier.width(4.dp))
                 Image(
                     modifier = Modifier.size(20.dp),
                     painter = painterResource(id = com.passwordkeeper.R.drawable.left_arrow),

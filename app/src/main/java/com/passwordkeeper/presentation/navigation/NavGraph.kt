@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.passwordkeeper.presentation.ui.auth.AuthScreen
+import com.passwordkeeper.presentation.ui.auth.ResetPasswordScreen
 import com.passwordkeeper.presentation.ui.detail.DetailScreen
 import com.passwordkeeper.presentation.ui.form.PasswordFormScreen
 import com.passwordkeeper.presentation.ui.home.HomeScreen
@@ -26,6 +27,18 @@ fun NavGraph(
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Auth.route) { inclusive = true }
                     }
+                },
+                onResetPassword = {
+                    navController.navigate(Screen.ResetPassword.route)
+                }
+            )
+        }
+
+        composable(Screen.ResetPassword.route) {
+            ResetPasswordScreen(
+                onBackClick = { navController.popBackStack() },
+                onResetSuccess = {
+                    navController.popBackStack()
                 }
             )
         }
