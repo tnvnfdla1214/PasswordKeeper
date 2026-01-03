@@ -36,9 +36,25 @@ fun NavGraph(
 
         composable(Screen.ResetPassword.route) {
             ResetPasswordScreen(
-                onBackClick = { navController.popBackStack() },
+                onBackClick = {
+                    if (startDestination == Screen.ResetPassword.route) {
+                        // 첫 시작이 ResetPassword인 경우 뒤로가기 차단
+                    } else {
+                        navController.popBackStack()
+                    }
+                },
                 onResetSuccess = {
-                    navController.popBackStack()
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.ResetPassword.route) { inclusive = true }
+                    }
+//                    if (startDestination == Screen.ResetPassword.route) {
+//                        // 첫 시작이 ResetPassword인 경우 AuthScreen으로 이동
+//                        navController.navigate(Screen.Auth.route) {
+//                            popUpTo(Screen.ResetPassword.route) { inclusive = true }
+//                        }
+//                    } else {
+//                        navController.popBackStack()
+//                    }
                 }
             )
         }
