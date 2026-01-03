@@ -129,6 +129,8 @@ fun AuthScreen(
                     .clickable { handleBiometricAuth() }
             )
 
+            Spacer(modifier = Modifier.height(12.dp))
+
             SpeechBubble(
                 text = "지문으로도 로그인할 수 있어요",
                 modifier = Modifier
@@ -156,9 +158,8 @@ fun PasswordIndicator(
                     .size(22.dp)
                     .clip(RoundedCornerShape(99.dp))
                     .background(
-                        //Todo : 입력을 받을 시 어떻게 변경될지는 아직 안정함
                         if (index < passwordLength) {
-                            MaterialTheme.colorScheme.primary
+                            androidx.compose.ui.graphics.Color(0xFF355F9B)
                         } else {
                             MaterialTheme.colorScheme.outline
                         }
@@ -167,7 +168,7 @@ fun PasswordIndicator(
             ) {
             }
             if (index < 3) {
-                Spacer(modifier = Modifier.width(15.dp))
+                Spacer(modifier = Modifier.width(28.dp))
             }
         }
     }
