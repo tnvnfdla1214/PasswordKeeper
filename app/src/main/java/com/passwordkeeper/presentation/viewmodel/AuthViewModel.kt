@@ -20,24 +20,24 @@ class AuthViewModel @Inject constructor(
     private val _authState = mutableStateOf<AuthState>(AuthState.Idle)
     val authState: State<AuthState> = _authState
 
-    init {
-        checkAndInitializeMasterPassword()
-    }
-
-    //Todo : 추후 비밀번호 저장 화면 추가 시 제거되어야 한다.
-    private fun checkAndInitializeMasterPassword() {
-        viewModelScope.launch {
-            try {
-                val hasMasterPassword = hasMasterPasswordUseCase()
-                if (!hasMasterPassword) {
-                    // 마스터 비밀번호가 없으면 "1234"로 초기화
-                    saveMasterPasswordUseCase("1234")
-                }
-            } catch (e: Exception) {
-                _authState.value = AuthState.Error("초기화 오류: ${e.message}")
-            }
-        }
-    }
+//    init {
+//        checkAndInitializeMasterPassword()
+//    }
+//
+//    //Todo : 추후 비밀번호 저장 화면 추가 시 제거되어야 한다.
+//    private fun checkAndInitializeMasterPassword() {
+//        viewModelScope.launch {
+//            try {
+//                val hasMasterPassword = hasMasterPasswordUseCase()
+//                if (!hasMasterPassword) {
+//                    // 마스터 비밀번호가 없으면 "1234"로 초기화
+//                    saveMasterPasswordUseCase("1234")
+//                }
+//            } catch (e: Exception) {
+//                _authState.value = AuthState.Error("초기화 오류: ${e.message}")
+//            }
+//        }
+//    }
 
     fun validatePassword(password: String) {
         viewModelScope.launch {

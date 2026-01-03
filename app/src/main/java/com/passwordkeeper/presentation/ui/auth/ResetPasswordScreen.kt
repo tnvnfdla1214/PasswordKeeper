@@ -23,7 +23,7 @@ fun ResetPasswordScreen(
 ) {
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var showStep by remember { mutableStateOf(1) } // 1: 새 비밀번호, 2: 확인 비밀번호
+    var showStep by remember { mutableIntStateOf(1) } // 1: 새 비밀번호, 2: 확인 비밀번호
     var showSuccessDialog by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -35,19 +35,20 @@ fun ResetPasswordScreen(
     }
 
     LaunchedEffect(confirmPassword) {
-        if (confirmPassword.length == 4) {
-            if (newPassword == confirmPassword) {
-                viewModel.savePassword(newPassword) { success ->
-                    if (success) {
-                        showSuccessDialog = true
-                    } else {
-                        errorMessage = "비밀번호 저장에 실패했습니다"
-                        showErrorDialog = true
-                        confirmPassword = ""
-                    }
-                }
+        if (confirmPassword.length < 4) return@LaunchedEffect
+
+        if (newPassword != confirmPassword) {
+            errorMessage = "비밀번호가 일치하지 않습니다"
+            showErrorDialog = true
+            confirmPassword = ""
+            return@LaunchedEffect
+        }
+
+        viewModel.savePassword(newPassword) { success ->
+            if (success) {
+                showSuccessDialog = true
             } else {
-                errorMessage = "비밀번호가 일치하지 않습니다"
+                errorMessage = "비밀번호 저장에 실패했습니다"
                 showErrorDialog = true
                 confirmPassword = ""
             }
@@ -57,16 +58,11 @@ fun ResetPasswordScreen(
     if (showSuccessDialog) {
         CustomDialog(
             type = DialogType.CONFIRM,
-            title = "비밀번호가 변경되었어요",
+            title = "비밀번호가 변경되었습니다",
             onDismissRequest = {
                 showSuccessDialog = false
                 onResetSuccess()
             },
-            button2Text = "확인",
-            button2Action = {
-                showSuccessDialog = false
-                onResetSuccess()
-            }
         )
     }
 
