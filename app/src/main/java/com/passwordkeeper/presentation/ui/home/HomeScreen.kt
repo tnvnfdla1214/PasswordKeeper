@@ -1,7 +1,9 @@
 package com.passwordkeeper.presentation.ui.home
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -194,50 +197,59 @@ fun PasswordListItem(
     password: Password,
     onClick: () -> Unit
 ) {
+    Log.d("qweqwe","password : " + password)
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
+            containerColor = Color(0xFFF5F5F5)
         )
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Image(
+                modifier = Modifier.size(40.dp),
+                painter = painterResource(
+                    id = if (password.userId.isBlank()) {
+                        com.passwordkeeper.R.drawable.ic_memo
+                    } else {
+                        com.passwordkeeper.R.drawable.ic_password
+                    }
+                ),
+                contentDescription = "아이템 이미지",
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = password.title,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = Color.Black
                 )
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "비밀번호",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                    text = password.userId.ifBlank {
+                        password.memo
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black.copy(alpha = 0.7f)
                 )
             }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "아이디: ${password.userId.take(20)}${if (password.userId.length > 20) "..." else ""}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+
+            Image(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = com.passwordkeeper.R.drawable.left_arrow),
+                contentDescription = "왼쪽 화살표 이미지",
             )
-            if (password.memo.isNotBlank()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = password.memo.take(30) + if (password.memo.length > 30) "..." else "",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f)
-                )
-            }
         }
     }
 }
