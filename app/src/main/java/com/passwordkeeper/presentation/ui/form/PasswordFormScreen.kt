@@ -164,7 +164,6 @@ fun PasswordFormScreen(
                     onValueChange = { viewModel.onPasswordChange(it) },
                     label = { },
                     modifier = Modifier.fillMaxWidth(),
-                    visualTransformation = PasswordVisualTransformation(),
                     singleLine = true,
                     readOnly = formState is PasswordFormState.ReadOnly,
                     interactionSource = passwordInteractionSource,
