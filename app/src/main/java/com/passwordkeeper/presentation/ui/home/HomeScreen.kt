@@ -1,6 +1,5 @@
 package com.passwordkeeper.presentation.ui.home
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
@@ -105,7 +104,9 @@ fun HomeScreen(
 
         HomeBottomScaffoldButton(
             modifier = Modifier.align(Alignment.BottomEnd),
-            onClick = onAddClick
+            onAddClick = onAddClick,
+            isDeleteMode = isDeleteMode,
+            onDeleteSelectedItemsClick = { viewModel.deleteSelectedItems() }
         )
     }
 }
@@ -466,22 +467,42 @@ fun HomePasswordList(
 @Composable
 fun HomeBottomScaffoldButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier.padding(end = 16.dp, bottom = 102.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF355F9B)
-        )
+    onAddClick: () -> Unit,
+    isDeleteMode: Boolean,
+    onDeleteSelectedItemsClick: () -> Unit,
+    //Todo : 갯수도 가져와야 함
     ) {
-        Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = "추가하기",
-            modifier = Modifier.size(12.dp),
-            tint = Color.White
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text("추가하기", color = Color.White, fontSize = 16.sp)
+    if (isDeleteMode) {
+        Button(
+            onClick = onDeleteSelectedItemsClick,
+            modifier = modifier.fillMaxWidth().padding(bottom = 48.dp, start = 16.dp, end = 16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF355F9B)
+            ),
+            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 24.dp),
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Text("1개", color = Color.White, fontSize = 16.sp)
+            Spacer(modifier = Modifier.size(2.dp))
+            Text("삭제하기", color = Color.White, fontSize = 16.sp)
+        }
+    } else {
+        Button(
+            onClick = onAddClick,
+            modifier = modifier.padding(end = 16.dp, bottom = 48.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF355F9B)
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "추가하기",
+                modifier = Modifier.size(12.dp),
+                tint = Color.White
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("추가하기", color = Color.White, fontSize = 16.sp)
+        }
     }
+
 }
