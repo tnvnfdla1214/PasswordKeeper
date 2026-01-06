@@ -92,7 +92,6 @@ fun HomeScreen(
             onSearchFocusChanged = { isSearchFocused = it },
             onToggleDeleteMode = { viewModel.toggleDeleteMode() },
             onToggleItemSelection = { viewModel.toggleItemSelection(it) },
-            //onDeleteSelectedItems = { viewModel.deleteSelectedItems() }, //todo : 하단에 버튼 만들기
             passwords = items,
             focusManager = focusManager,
             onItemClick = { itemId ->
@@ -192,7 +191,7 @@ fun BoxScope.HomeContentSection(
                 )
 
                 HomeDeleteToggle(
-                    modifier = Modifier.padding(top = 24.dp),
+                    modifier = Modifier.padding(vertical = 12.dp),
                     isDeleteMode = isDeleteMode,
                     onToggleDeleteMode = { onToggleDeleteMode() },
                     focusManager = focusManager
