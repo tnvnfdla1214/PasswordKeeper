@@ -187,14 +187,7 @@ fun BoxScope.HomeContentSection(
                 )
 
                 HomeAdBanner(
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-
-                HomeDeleteToggle(
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    isDeleteMode = isDeleteMode,
-                    onToggleDeleteMode = { onToggleDeleteMode() },
-                    focusManager = focusManager
+                    modifier = Modifier.height(50.dp).padding(top = 16.dp)
                 )
 
                 HomeItemList(
@@ -203,6 +196,7 @@ fun BoxScope.HomeContentSection(
                     searchQuery = searchQuery,
                     isDeleteMode = isDeleteMode,
                     selectedItems = selectedItems,
+                    onToggleDeleteMode = onToggleDeleteMode,
                     onToggleItemSelection = onToggleItemSelection,
                     focusManager = focusManager,
                     onItemClick = onItemClick
@@ -384,6 +378,7 @@ fun HomeItemList(
     searchQuery: String,
     isDeleteMode: Boolean,
     selectedItems: Set<Long>,
+    onToggleDeleteMode: () -> Unit,
     onToggleItemSelection: (Long) -> Unit,
     focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
@@ -400,7 +395,9 @@ fun HomeItemList(
             passwords = passwords,
             isDeleteMode = isDeleteMode,
             selectedItems = selectedItems,
+            onToggleDeleteMode = onToggleDeleteMode,
             onToggleItemSelection = onToggleItemSelection,
+            focusManager = focusManager,
             onItemClick = onItemClick
         )
     }
@@ -436,13 +433,24 @@ fun HomePasswordList(
     passwords: List<Password>,
     isDeleteMode: Boolean,
     selectedItems: Set<Long>,
+    onToggleDeleteMode: () -> Unit,
     onToggleItemSelection: (Long) -> Unit,
+    focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
+        item {
+            HomeDeleteToggle(
+                modifier = Modifier.padding(vertical = 12.dp),
+                isDeleteMode = isDeleteMode,
+                onToggleDeleteMode = onToggleDeleteMode,
+                focusManager = focusManager
+            )
+        }
+
         items(
             items = passwords,
             key = { it.id }
