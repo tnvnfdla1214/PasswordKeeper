@@ -1,6 +1,8 @@
 package com.passwordkeeper.presentation.ui.form
 
 import android.util.Log
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -100,15 +102,6 @@ fun PasswordFormScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     readOnly = formState is PasswordFormState.ReadOnly,
-                    trailingIcon = if ((formState is PasswordFormState.ReadOnly) && serviceName.isNotBlank()) {
-                        {
-                            IconButton(onClick = {
-                                clipboardManager.setText(AnnotatedString(serviceName))
-                            }) {
-                                Icon(Icons.Default.ContentCopy, contentDescription = "복사")
-                            }
-                        }
-                    } else null
                 )
 
                 Text(
@@ -118,6 +111,17 @@ fun PasswordFormScreen(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
+                val userIdInteractionSource = remember { MutableInteractionSource() }
+                LaunchedEffect(userIdInteractionSource) {
+                    userIdInteractionSource.interactions.collect { interaction ->
+                        if (interaction is PressInteraction.Press &&
+                            formState is PasswordFormState.ReadOnly &&
+                            userId.isNotBlank()) {
+                            clipboardManager.setText(AnnotatedString(userId))
+                        }
+                    }
+                }
+
                 OutlinedTextField(
                     value = userId,
                     onValueChange = { viewModel.onUserIdChange(it) },
@@ -125,6 +129,7 @@ fun PasswordFormScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     readOnly = formState is PasswordFormState.ReadOnly,
+                    interactionSource = userIdInteractionSource,
                     trailingIcon = if ((formState is PasswordFormState.ReadOnly) && userId.isNotBlank()) {
                         {
                             IconButton(onClick = {
@@ -143,6 +148,17 @@ fun PasswordFormScreen(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
+                val passwordInteractionSource = remember { MutableInteractionSource() }
+                LaunchedEffect(passwordInteractionSource) {
+                    passwordInteractionSource.interactions.collect { interaction ->
+                        if (interaction is PressInteraction.Press &&
+                            formState is PasswordFormState.ReadOnly &&
+                            password.isNotBlank()) {
+                            clipboardManager.setText(AnnotatedString(password))
+                        }
+                    }
+                }
+
                 OutlinedTextField(
                     value = password,
                     onValueChange = { viewModel.onPasswordChange(it) },
@@ -151,6 +167,7 @@ fun PasswordFormScreen(
                     visualTransformation = PasswordVisualTransformation(),
                     singleLine = true,
                     readOnly = formState is PasswordFormState.ReadOnly,
+                    interactionSource = passwordInteractionSource,
                     trailingIcon = if ((formState is PasswordFormState.ReadOnly) && password.isNotBlank()) {
                         {
                             IconButton(onClick = {
@@ -177,15 +194,6 @@ fun PasswordFormScreen(
                     minLines = 3,
                     maxLines = 5,
                     readOnly = formState is PasswordFormState.ReadOnly,
-                    trailingIcon = if ((formState is PasswordFormState.ReadOnly) && memo.isNotBlank()) {
-                        {
-                            IconButton(onClick = {
-                                clipboardManager.setText(AnnotatedString(memo))
-                            }) {
-                                Icon(Icons.Default.ContentCopy, contentDescription = "복사")
-                            }
-                        }
-                    } else null
                 )
             }
 
