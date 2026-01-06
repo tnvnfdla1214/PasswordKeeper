@@ -38,11 +38,14 @@ class PasswordFormViewModel @Inject constructor(
     private val _memo = MutableStateFlow("")
     val memo: StateFlow<String> = _memo.asStateFlow()
 
-    private val _isEditMode = MutableStateFlow(false)
-    val isEditMode: StateFlow<Boolean> = _isEditMode.asStateFlow()
-
-    private val _isSaving = MutableStateFlow(false)
-    val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
+    private val _formState = MutableStateFlow(
+        if (passwordId != null) {
+            PasswordFormState.ReadOnly(passwordId!!)
+        } else {
+            PasswordFormState.Register
+        }
+    )
+    val formState: StateFlow<PasswordFormState> = _formState.asStateFlow()
 
     init {
         passwordId?.let { id ->
@@ -50,17 +53,61 @@ class PasswordFormViewModel @Inject constructor(
         }
     }
 
+    fun switchToUpdateMode() {
+        val currentState = _formState.value
+        if (currentState is PasswordFormState.ReadOnly) {
+            _formState.value = PasswordFormState.Update(currentState.id)
+        }
+    }
+
     private fun loadPassword(id: Long) {
         viewModelScope.launch {
             getPasswordByIdUseCase(id)?.let { password ->
                 _serviceName.value = password.title
-                _userId.value = password.memo
-                _password.value = password.title
+                _userId.value = password.userId
+                _password.value = password.password
                 _memo.value = password.memo
-                _isEditMode.value = true
             }
         }
     }
+
+    fun savePassword(onSuccess: (PasswordFormState) -> Unit) {
+        viewModelScope.launch {
+            val password = createPasswordObject()
+
+            when (val state = _formState.value) {
+                is PasswordFormState.Register -> {
+                    val newId = insertPasswordUseCase(password)
+                    passwordId = newId
+                    _formState.value = PasswordFormState.ReadOnly(newId)
+                    onSuccess(PasswordFormState.Register)
+                }
+                is PasswordFormState.Update -> {
+                    updatePasswordUseCase(password)
+                    _formState.value = PasswordFormState.ReadOnly(state.id)
+                    onSuccess(PasswordFormState.Update(state.id))
+                }
+                is PasswordFormState.ReadOnly -> {
+                    // ReadOnly 상태에서는 저장하지 않음
+                }
+            }
+        }
+    }
+
+    fun deletePassword(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                passwordId?.let {
+                    val password = createPasswordObject()
+                    deletePasswordUseCase(password)
+                    onSuccess()
+                }
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
 
     fun onServiceNameChange(value: String) {
         _serviceName.value = value
@@ -78,53 +125,18 @@ class PasswordFormViewModel @Inject constructor(
         _memo.value = value
     }
 
-    fun savePassword(onSuccess: () -> Unit) {
+    private fun createPasswordObject() = Password(
+        id = passwordId ?: 0,
+        title = _serviceName.value,
+        userId = _userId.value,
+        password = _password.value,
+        memo = _memo.value,
+        activityTime = System.currentTimeMillis()
+    )
+}
 
-        viewModelScope.launch {
-            _isSaving.value = true
-            try {
-                val password = Password(
-                    id = passwordId ?: 0,
-                    title = _serviceName.value,
-                    userId = _userId.value,
-                    password = _password.value,
-                    memo = _memo.value,
-                    activityTime = System.currentTimeMillis()
-                )
-
-                if (isEditMode.value) {
-                    updatePasswordUseCase(password)
-                } else {
-                    val newId = insertPasswordUseCase(password)
-                    passwordId = newId
-                    _isEditMode.value = true
-                }
-
-                onSuccess()
-            } finally {
-                _isSaving.value = false
-            }
-        }
-    }
-
-    fun deletePassword(onSuccess: () -> Unit) {
-        viewModelScope.launch {
-            try {
-                passwordId?.let { id ->
-                    val password = Password(
-                        id = id,
-                        title = _serviceName.value,
-                        userId = _userId.value,
-                        password = _password.value,
-                        memo = _memo.value,
-                        activityTime = System.currentTimeMillis()
-                    )
-                    deletePasswordUseCase(password)
-                    onSuccess()
-                }
-            } catch (e: Exception) {
-                // Handle error
-            }
-        }
-    }
+sealed class PasswordFormState {
+    data object Register : PasswordFormState()
+    data class ReadOnly(val id: Long) : PasswordFormState()
+    data class Update(val id: Long) : PasswordFormState()
 }

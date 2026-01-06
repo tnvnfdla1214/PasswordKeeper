@@ -197,7 +197,6 @@ fun PasswordListItem(
     password: Password,
     onClick: () -> Unit
 ) {
-    Log.d("qweqwe","password : " + password)
     Card(
         modifier = Modifier
             .fillMaxWidth()

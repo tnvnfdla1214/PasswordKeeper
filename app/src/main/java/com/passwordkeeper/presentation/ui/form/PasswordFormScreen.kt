@@ -1,5 +1,6 @@
 package com.passwordkeeper.presentation.ui.form
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -14,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.passwordkeeper.presentation.ui.components.CustomDialog
 import com.passwordkeeper.presentation.ui.components.DialogType
+import com.passwordkeeper.presentation.viewmodel.PasswordFormState
 import com.passwordkeeper.presentation.viewmodel.PasswordFormViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,8 +28,12 @@ fun PasswordFormScreen(
     val userId by viewModel.userId.collectAsState()
     val password by viewModel.password.collectAsState()
     val memo by viewModel.memo.collectAsState()
-    val isEditMode by viewModel.isEditMode.collectAsState()
-    val isSaving by viewModel.isSaving.collectAsState()
+
+    val formState by viewModel.formState.collectAsState()
+
+    LaunchedEffect(formState) {
+        Log.d("qweqwe", "Current formState: $formState")
+    }
 
     val clipboardManager = LocalClipboardManager.current
 
@@ -63,7 +69,7 @@ fun PasswordFormScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(if(isEditMode) "내 정보" else "")
+                    Text(if(formState is PasswordFormState.ReadOnly) "내 정보" else "")
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
@@ -93,8 +99,8 @@ fun PasswordFormScreen(
                     label = { },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    readOnly = isEditMode,
-                    trailingIcon = if (isEditMode && serviceName.isNotBlank()) {
+                    readOnly = formState is PasswordFormState.ReadOnly,
+                    trailingIcon = if ((formState is PasswordFormState.ReadOnly) && serviceName.isNotBlank()) {
                         {
                             IconButton(onClick = {
                                 clipboardManager.setText(AnnotatedString(serviceName))
@@ -118,8 +124,8 @@ fun PasswordFormScreen(
                     label = { },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    readOnly = isEditMode,
-                    trailingIcon = if (isEditMode && userId.isNotBlank()) {
+                    readOnly = formState is PasswordFormState.ReadOnly,
+                    trailingIcon = if ((formState is PasswordFormState.ReadOnly) && userId.isNotBlank()) {
                         {
                             IconButton(onClick = {
                                 clipboardManager.setText(AnnotatedString(userId))
@@ -144,8 +150,8 @@ fun PasswordFormScreen(
                     modifier = Modifier.fillMaxWidth(),
                     visualTransformation = PasswordVisualTransformation(),
                     singleLine = true,
-                    readOnly = isEditMode,
-                    trailingIcon = if (isEditMode && password.isNotBlank()) {
+                    readOnly = formState is PasswordFormState.ReadOnly,
+                    trailingIcon = if ((formState is PasswordFormState.ReadOnly) && password.isNotBlank()) {
                         {
                             IconButton(onClick = {
                                 clipboardManager.setText(AnnotatedString(password))
@@ -170,8 +176,8 @@ fun PasswordFormScreen(
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3,
                     maxLines = 5,
-                    readOnly = isEditMode,
-                    trailingIcon = if (isEditMode && memo.isNotBlank()) {
+                    readOnly = formState is PasswordFormState.ReadOnly,
+                    trailingIcon = if ((formState is PasswordFormState.ReadOnly) && memo.isNotBlank()) {
                         {
                             IconButton(onClick = {
                                 clipboardManager.setText(AnnotatedString(memo))
@@ -184,18 +190,22 @@ fun PasswordFormScreen(
             }
 
             PasswordFormButtons(
-                isEditMode = isEditMode,
-                isSaving = isSaving,
+                formState = formState,
                 serviceName = serviceName,
                 userId = userId,
                 password = password,
                 memo = memo,
                 onDeleteClick = { showDeleteDialog = true },
                 onSaveClick = {
-                    showSaveDialog = true
-                    viewModel.savePassword(onSuccess = {})
+                    //showSaveDialog = true
+                    viewModel.savePassword(onSuccess = {
+                        //Todo : 등록이냐 수정이냐 에 따라 분기
+                        showSaveDialog = true
+                    })
                 },
-                onUpdateClick = { viewModel.savePassword(onSuccess = {}) }
+                onEditClick = {
+                    viewModel.switchToUpdateMode()
+                }
             )
         }
     }
@@ -203,56 +213,65 @@ fun PasswordFormScreen(
 
 @Composable
 private fun PasswordFormButtons(
-    isEditMode: Boolean,
-    isSaving: Boolean,
+    formState: PasswordFormState,
     serviceName: String,
     userId: String,
     password: String,
     memo: String,
     onDeleteClick: () -> Unit,
     onSaveClick: () -> Unit,
-    onUpdateClick: () -> Unit
+    onEditClick: () -> Unit
 ) {
-    val isFormValid = serviceName.isNotBlank() && (
-        (userId.isNotBlank() && password.isNotBlank()) ||
-        (userId.isBlank() && password.isBlank() && memo.isNotBlank())
-    )
+    val isFormValid = serviceName.isNotBlank() &&
+        (userId.isNotBlank() || password.isNotBlank() || memo.isNotBlank())
 
-    if (isEditMode) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+    when (formState) {
+        is PasswordFormState.Register -> {
             Button(
-                onClick = onDeleteClick,
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                ),
-                enabled = !isSaving
+                onClick = onSaveClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
+                enabled = isFormValid
             ) {
-                Text("삭제하기")
+                Text("저장하기")
             }
+        }
+        is PasswordFormState.ReadOnly -> {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Button(
+                    onClick = onDeleteClick,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    ),
+                ) {
+                    Text("삭제하기")
+                }
 
+                Button(
+                    onClick = onEditClick,
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text("수정하기")
+                }
+            }
+        }
+        is PasswordFormState.Update -> {
             Button(
-                onClick = onUpdateClick,
-                modifier = Modifier.weight(1f),
-                enabled = !isSaving && isFormValid
+                onClick = onSaveClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
+                enabled = isFormValid
             ) {
                 Text("수정하기")
             }
-        }
-    } else {
-        Button(
-            onClick = onSaveClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
-            enabled = !isSaving && isFormValid
-        ) {
-            Text("저장하기")
         }
     }
 }
