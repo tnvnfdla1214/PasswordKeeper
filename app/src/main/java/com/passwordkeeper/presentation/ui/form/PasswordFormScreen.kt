@@ -1,12 +1,14 @@
 package com.passwordkeeper.presentation.ui.form
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,6 +28,8 @@ fun PasswordFormScreen(
     val memo by viewModel.memo.collectAsState()
     val isEditMode by viewModel.isEditMode.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
+
+    val clipboardManager = LocalClipboardManager.current
 
     var showSaveDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -88,7 +92,17 @@ fun PasswordFormScreen(
                     onValueChange = { viewModel.onServiceNameChange(it) },
                     label = { },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    readOnly = isEditMode,
+                    trailingIcon = if (isEditMode && serviceName.isNotBlank()) {
+                        {
+                            IconButton(onClick = {
+                                clipboardManager.setText(AnnotatedString(serviceName))
+                            }) {
+                                Icon(Icons.Default.ContentCopy, contentDescription = "복사")
+                            }
+                        }
+                    } else null
                 )
 
                 Text(
@@ -103,7 +117,17 @@ fun PasswordFormScreen(
                     onValueChange = { viewModel.onUserIdChange(it) },
                     label = { },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    readOnly = isEditMode,
+                    trailingIcon = if (isEditMode && userId.isNotBlank()) {
+                        {
+                            IconButton(onClick = {
+                                clipboardManager.setText(AnnotatedString(userId))
+                            }) {
+                                Icon(Icons.Default.ContentCopy, contentDescription = "복사")
+                            }
+                        }
+                    } else null
                 )
 
                 Text(
@@ -119,7 +143,17 @@ fun PasswordFormScreen(
                     label = { },
                     modifier = Modifier.fillMaxWidth(),
                     visualTransformation = PasswordVisualTransformation(),
-                    singleLine = true
+                    singleLine = true,
+                    readOnly = isEditMode,
+                    trailingIcon = if (isEditMode && password.isNotBlank()) {
+                        {
+                            IconButton(onClick = {
+                                clipboardManager.setText(AnnotatedString(password))
+                            }) {
+                                Icon(Icons.Default.ContentCopy, contentDescription = "복사")
+                            }
+                        }
+                    } else null
                 )
 
                 Text(
@@ -135,7 +169,17 @@ fun PasswordFormScreen(
                     label = { },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3,
-                    maxLines = 5
+                    maxLines = 5,
+                    readOnly = isEditMode,
+                    trailingIcon = if (isEditMode && memo.isNotBlank()) {
+                        {
+                            IconButton(onClick = {
+                                clipboardManager.setText(AnnotatedString(memo))
+                            }) {
+                                Icon(Icons.Default.ContentCopy, contentDescription = "복사")
+                            }
+                        }
+                    } else null
                 )
             }
 
