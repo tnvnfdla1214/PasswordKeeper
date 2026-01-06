@@ -46,14 +46,6 @@ fun NavGraph(
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.ResetPassword.route) { inclusive = true }
                     }
-//                    if (startDestination == Screen.ResetPassword.route) {
-//                        // 첫 시작이 ResetPassword인 경우 AuthScreen으로 이동
-//                        navController.navigate(Screen.Auth.route) {
-//                            popUpTo(Screen.ResetPassword.route) { inclusive = true }
-//                        }
-//                    } else {
-//                        navController.popBackStack()
-//                    }
                 }
             )
         }
@@ -72,7 +64,7 @@ fun NavGraph(
         composable(
             route = Screen.Form.route,
             arguments = listOf(
-                navArgument("passwordId") {
+                navArgument(NavArgs.PASSWORD_ID) {
                     type = NavType.LongType
                     defaultValue = -1L
                 }

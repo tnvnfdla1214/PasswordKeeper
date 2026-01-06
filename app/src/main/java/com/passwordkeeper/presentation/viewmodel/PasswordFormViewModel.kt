@@ -8,6 +8,7 @@ import com.passwordkeeper.domain.usecase.DeleteIPasswordUseCase
 import com.passwordkeeper.domain.usecase.GetPasswordByIdUseCase
 import com.passwordkeeper.domain.usecase.InsertPasswordUseCase
 import com.passwordkeeper.domain.usecase.UpdatePasswordUseCase
+import com.passwordkeeper.presentation.navigation.NavArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +25,7 @@ class PasswordFormViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private var passwordId: Long? = savedStateHandle.get<Long>("passwordId")?.let {
+    private var passwordId: Long? = savedStateHandle.get<Long>(NavArgs.PASSWORD_ID)?.let {
         if (it == -1L) null else it
     }
 
