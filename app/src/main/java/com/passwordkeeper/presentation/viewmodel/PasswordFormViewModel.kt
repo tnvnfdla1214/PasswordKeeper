@@ -24,7 +24,9 @@ class PasswordFormViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private var passwordId: Long? = savedStateHandle.get<Long>("passwordId")
+    private var passwordId: Long? = savedStateHandle.get<Long>("passwordId")?.let {
+        if (it == -1L) null else it
+    }
 
     private val _serviceName = MutableStateFlow("")
     val serviceName: StateFlow<String> = _serviceName.asStateFlow()
