@@ -46,6 +46,8 @@ fun HomeScreen(
 ) {
     val items by viewModel.items.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
+    val isDeleteMode by viewModel.isDeleteMode.collectAsState()
+    val selectedItems by viewModel.selectedItems.collectAsState()
 
     var isSearchFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -53,8 +55,11 @@ fun HomeScreen(
     var screenHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
 
-    BackHandler(enabled = isSearchFocused) {
-        focusManager.clearFocus()
+    BackHandler(enabled = isSearchFocused || isDeleteMode) {
+        when {
+            isSearchFocused -> focusManager.clearFocus()
+            isDeleteMode -> viewModel.toggleDeleteMode()
+        }
     }
 
     Box(
@@ -80,10 +85,15 @@ fun HomeScreen(
         HomeContentSection(
             itemsSize = items.size,
             isSearchFocused = isSearchFocused,
+            isDeleteMode = isDeleteMode,
+            selectedItems = selectedItems,
             screenHeight = screenHeight,
             searchQuery = searchQuery,
             onSearchQueryChange = { viewModel.onSearchQueryChange(it) },
             onSearchFocusChanged = { isSearchFocused = it },
+            onToggleDeleteMode = { viewModel.toggleDeleteMode() },
+            onToggleItemSelection = { viewModel.toggleItemSelection(it) },
+            onDeleteSelectedItems = { viewModel.deleteSelectedItems() },
             passwords = items,
             focusManager = focusManager,
             onItemClick = { itemId ->
@@ -104,10 +114,15 @@ fun HomeScreen(
 fun BoxScope.HomeContentSection(
     itemsSize: Int,
     isSearchFocused: Boolean,
+    isDeleteMode: Boolean,
+    selectedItems: Set<Long>,
     screenHeight: Dp,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onSearchFocusChanged: (Boolean) -> Unit,
+    onToggleDeleteMode: () -> Unit,
+    onToggleItemSelection: (Long) -> Unit,
+    onDeleteSelectedItems: () -> Unit,
     passwords: List<Password>,
     focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
@@ -175,8 +190,12 @@ fun BoxScope.HomeContentSection(
                     modifier = Modifier.padding(top = 16.dp)
                 )
 
-                HomeDeleteButton(
+                HomeDeleteToggle(
                     modifier = Modifier.padding(top = 24.dp),
+                    isDeleteMode = isDeleteMode,
+                    selectedCount = selectedItems.size,
+                    onToggleDeleteMode = onToggleDeleteMode,
+                    onDeleteSelectedItems = onDeleteSelectedItems,
                     focusManager = focusManager
                 )
 
@@ -184,6 +203,9 @@ fun BoxScope.HomeContentSection(
                     modifier = Modifier.weight(1f),
                     passwords = passwords,
                     searchQuery = searchQuery,
+                    isDeleteMode = isDeleteMode,
+                    selectedItems = selectedItems,
+                    onToggleItemSelection = onToggleItemSelection,
                     focusManager = focusManager,
                     onItemClick = onItemClick
                 )
@@ -195,6 +217,8 @@ fun BoxScope.HomeContentSection(
 @Composable
 fun PasswordListItem(
     password: Password,
+    isDeleteMode: Boolean,
+    isSelected: Boolean,
     onClick: () -> Unit
 ) {
     Card(
@@ -203,7 +227,11 @@ fun PasswordListItem(
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF5F5F5)
+            containerColor = if (isDeleteMode && isSelected) {
+                Color(0xFFE3F2FD)
+            } else {
+                Color(0xFFF5F5F5)
+            }
         )
     ) {
         Row(
@@ -244,11 +272,21 @@ fun PasswordListItem(
                 )
             }
 
-            Image(
-                modifier = Modifier.size(24.dp),
-                painter = painterResource(id = com.passwordkeeper.R.drawable.left_arrow),
-                contentDescription = "왼쪽 화살표 이미지",
-            )
+            if (isDeleteMode) {
+                Checkbox(
+                    checked = isSelected,
+                    onCheckedChange = { onClick() },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = Color(0xFF355F9B)
+                    )
+                )
+            } else {
+                Image(
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(id = com.passwordkeeper.R.drawable.left_arrow),
+                    contentDescription = "왼쪽 화살표 이미지",
+                )
+            }
         }
     }
 }
@@ -284,8 +322,12 @@ fun HomeSearchField(
 }
 
 @Composable
-fun HomeDeleteButton(
+fun HomeDeleteToggle(
     modifier: Modifier,
+    isDeleteMode: Boolean,
+    selectedCount: Int,
+    onToggleDeleteMode: () -> Unit,
+    onDeleteSelectedItems: () -> Unit,
     focusManager: androidx.compose.ui.focus.FocusManager
 ) {
     Row(
@@ -295,10 +337,25 @@ fun HomeDeleteButton(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) { focusManager.clearFocus() },
-        horizontalArrangement = Arrangement.End
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        TextButton(onClick = { /* 삭제 로직 추가 */ }) {
-            Text("삭제", color = Color.Gray, fontSize = 14.sp)
+        if (isDeleteMode) {
+            TextButton(onClick = onDeleteSelectedItems, enabled = selectedCount > 0) {
+                Text(
+                    "삭제하기",
+                    color = if (selectedCount > 0) Color.Red else Color.Gray,
+                    fontSize = 14.sp
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            TextButton(onClick = onToggleDeleteMode) {
+                Text("취소", color = Color.Gray, fontSize = 14.sp)
+            }
+        } else {
+            TextButton(onClick = onToggleDeleteMode) {
+                Text("삭제", color = Color.Gray, fontSize = 14.sp)
+            }
         }
     }
 }
@@ -325,6 +382,9 @@ fun HomeItemList(
     modifier: Modifier = Modifier,
     passwords: List<Password>,
     searchQuery: String,
+    isDeleteMode: Boolean,
+    selectedItems: Set<Long>,
+    onToggleItemSelection: (Long) -> Unit,
     focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
 ) {
@@ -338,6 +398,9 @@ fun HomeItemList(
         HomePasswordList(
             modifier = modifier,
             passwords = passwords,
+            isDeleteMode = isDeleteMode,
+            selectedItems = selectedItems,
+            onToggleItemSelection = onToggleItemSelection,
             onItemClick = onItemClick
         )
     }
@@ -371,6 +434,9 @@ fun HomeEmptyState(
 fun HomePasswordList(
     modifier: Modifier = Modifier,
     passwords: List<Password>,
+    isDeleteMode: Boolean,
+    selectedItems: Set<Long>,
+    onToggleItemSelection: (Long) -> Unit,
     onItemClick: (Long) -> Unit
 ) {
     LazyColumn(
@@ -383,7 +449,15 @@ fun HomePasswordList(
         ) { password ->
             PasswordListItem(
                 password = password,
-                onClick = { onItemClick(password.id) }
+                isDeleteMode = isDeleteMode,
+                isSelected = selectedItems.contains(password.id),
+                onClick = {
+                    if (isDeleteMode) {
+                        onToggleItemSelection(password.id)
+                    } else {
+                        onItemClick(password.id)
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
