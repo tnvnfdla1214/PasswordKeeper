@@ -106,6 +106,7 @@ fun HomeScreen(
             modifier = Modifier.align(Alignment.BottomEnd),
             onAddClick = onAddClick,
             isDeleteMode = isDeleteMode,
+            selectedCount = selectedItems.size,
             onDeleteSelectedItemsClick = { viewModel.deleteSelectedItems() }
         )
     }
@@ -469,20 +470,22 @@ fun HomeBottomScaffoldButton(
     modifier: Modifier = Modifier,
     onAddClick: () -> Unit,
     isDeleteMode: Boolean,
-    onDeleteSelectedItemsClick: () -> Unit,
-    //Todo : 갯수도 가져와야 함
-    ) {
+    selectedCount: Int,
+    onDeleteSelectedItemsClick: () -> Unit
+) {
     if (isDeleteMode) {
         Button(
             onClick = onDeleteSelectedItemsClick,
             modifier = modifier.fillMaxWidth().padding(bottom = 48.dp, start = 16.dp, end = 16.dp),
+            enabled = selectedCount > 0,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF355F9B)
+                containerColor = if (selectedCount > 0) Color(0xFF355F9B) else Color.Gray,
+                disabledContainerColor = Color.Gray
             ),
             contentPadding = PaddingValues(vertical = 16.dp, horizontal = 24.dp),
             shape = RoundedCornerShape(10.dp)
         ) {
-            Text("1개", color = Color.White, fontSize = 16.sp)
+            Text("${selectedCount}개", color = Color.White, fontSize = 16.sp)
             Spacer(modifier = Modifier.size(2.dp))
             Text("삭제하기", color = Color.White, fontSize = 16.sp)
         }
@@ -504,5 +507,4 @@ fun HomeBottomScaffoldButton(
             Text("추가하기", color = Color.White, fontSize = 16.sp)
         }
     }
-
 }
