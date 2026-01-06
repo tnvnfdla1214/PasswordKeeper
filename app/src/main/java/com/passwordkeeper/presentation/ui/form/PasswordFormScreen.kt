@@ -39,14 +39,18 @@ fun PasswordFormScreen(
 
     val clipboardManager = LocalClipboardManager.current
 
-    var showSaveDialog by remember { mutableStateOf(false) }
+    var savedState by remember { mutableStateOf<PasswordFormState?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    if (showSaveDialog) {
+    if (savedState != null) {
         CustomDialog(
             type = DialogType.CONFIRM,
-            title = "내 정보가 잘 저장 되었어요",
-            onDismissRequest = { showSaveDialog = false }
+            title = when (savedState) {
+                is PasswordFormState.Register -> "내 정보가 잘 저장 되었어요"
+                is PasswordFormState.Update -> "내 정보가 잘 수정 되었어요"
+                else -> "완료되었어요"
+            },
+            onDismissRequest = { savedState = null }
         )
     }
 
@@ -204,10 +208,8 @@ fun PasswordFormScreen(
                 memo = memo,
                 onDeleteClick = { showDeleteDialog = true },
                 onSaveClick = {
-                    //showSaveDialog = true
-                    viewModel.savePassword(onSuccess = {
-                        //Todo : 등록이냐 수정이냐 에 따라 분기
-                        showSaveDialog = true
+                    viewModel.savePassword(onSuccess = { state ->
+                        savedState = state
                     })
                 },
                 onEditClick = {

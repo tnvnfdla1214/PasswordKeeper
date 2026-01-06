@@ -96,14 +96,10 @@ class PasswordFormViewModel @Inject constructor(
 
     fun deletePassword(onSuccess: () -> Unit) {
         viewModelScope.launch {
-            try {
-                passwordId?.let {
-                    val password = createPasswordObject()
-                    deletePasswordUseCase(password)
-                    onSuccess()
-                }
-            } catch (e: Exception) {
-                // Handle error
+            passwordId?.let {
+                val password = createPasswordObject()
+                deletePasswordUseCase(password)
+                onSuccess()
             }
         }
     }
