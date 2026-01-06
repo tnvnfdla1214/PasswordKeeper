@@ -1,6 +1,9 @@
 package com.passwordkeeper.presentation.navigation
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -51,6 +54,12 @@ fun NavGraph(
         }
 
         composable(Screen.Home.route) {
+            val activity = LocalContext.current as? Activity
+
+            BackHandler {
+                activity?.finishAffinity()
+            }
+
             HomeScreen(
                 onItemClick = { passwordId ->
                     navController.navigate(Screen.Form.createRoute(passwordId))
