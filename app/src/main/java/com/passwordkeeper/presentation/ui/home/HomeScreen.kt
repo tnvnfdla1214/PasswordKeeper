@@ -54,7 +54,7 @@ fun HomeScreen(
 
     var screenHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
-
+    //Todo : 앱을 켠상태로 홀드 후 다시 들어와서 검색을 누르면 깜박 거림 수정해야 함
     BackHandler(enabled = isSearchFocused || isDeleteMode) {
         when {
             isSearchFocused -> focusManager.clearFocus()
@@ -93,7 +93,7 @@ fun HomeScreen(
             onSearchFocusChanged = { isSearchFocused = it },
             onToggleDeleteMode = { viewModel.toggleDeleteMode() },
             onToggleItemSelection = { viewModel.toggleItemSelection(it) },
-            onDeleteSelectedItems = { viewModel.deleteSelectedItems() },
+            //onDeleteSelectedItems = { viewModel.deleteSelectedItems() }, //todo : 하단에 버튼 만들기
             passwords = items,
             focusManager = focusManager,
             onItemClick = { itemId ->
@@ -122,7 +122,6 @@ fun BoxScope.HomeContentSection(
     onSearchFocusChanged: (Boolean) -> Unit,
     onToggleDeleteMode: () -> Unit,
     onToggleItemSelection: (Long) -> Unit,
-    onDeleteSelectedItems: () -> Unit,
     passwords: List<Password>,
     focusManager: androidx.compose.ui.focus.FocusManager,
     onItemClick: (Long) -> Unit
@@ -193,9 +192,7 @@ fun BoxScope.HomeContentSection(
                 HomeDeleteToggle(
                     modifier = Modifier.padding(top = 24.dp),
                     isDeleteMode = isDeleteMode,
-                    selectedCount = selectedItems.size,
-                    onToggleDeleteMode = onToggleDeleteMode,
-                    onDeleteSelectedItems = onDeleteSelectedItems,
+                    onToggleDeleteMode = { onToggleDeleteMode() },
                     focusManager = focusManager
                 )
 
@@ -325,9 +322,7 @@ fun HomeSearchField(
 fun HomeDeleteToggle(
     modifier: Modifier,
     isDeleteMode: Boolean,
-    selectedCount: Int,
     onToggleDeleteMode: () -> Unit,
-    onDeleteSelectedItems: () -> Unit,
     focusManager: androidx.compose.ui.focus.FocusManager
 ) {
     Row(
@@ -340,22 +335,26 @@ fun HomeDeleteToggle(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (isDeleteMode) {
-            TextButton(onClick = onDeleteSelectedItems, enabled = selectedCount > 0) {
-                Text(
-                    "삭제하기",
-                    color = if (selectedCount > 0) Color.Red else Color.Gray,
-                    fontSize = 14.sp
+        Row(
+            modifier = modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onToggleDeleteMode
                 )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            TextButton(onClick = onToggleDeleteMode) {
-                Text("취소", color = Color.Gray, fontSize = 14.sp)
-            }
-        } else {
-            TextButton(onClick = onToggleDeleteMode) {
-                Text("삭제", color = Color.Gray, fontSize = 14.sp)
-            }
+                .padding(end = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                modifier = Modifier.size(16.dp),
+                checked = isDeleteMode,
+                onCheckedChange = { onToggleDeleteMode() },
+                colors = CheckboxDefaults.colors(
+                    checkedColor = Color(0xFF355F9B)
+                )
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Text("삭제하기", color = Color.Gray, fontSize = 14.sp)
         }
     }
 }
