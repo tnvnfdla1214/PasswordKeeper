@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.passwordkeeper.presentation.ui.components.CustomDialog
+import com.passwordkeeper.presentation.ui.components.DialogType
 import com.passwordkeeper.presentation.viewmodel.AuthState
 import com.passwordkeeper.presentation.viewmodel.AuthViewModel
 import com.passwordkeeper.util.BiometricAuthManager
@@ -38,6 +40,7 @@ fun AuthScreen(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     var password by remember { mutableStateOf("") }
+    var showResetPasswordDialog by remember { mutableStateOf(false) }
     val authState by viewModel.authState
     val context = LocalContext.current
     val activity = context as? FragmentActivity
@@ -81,6 +84,21 @@ fun AuthScreen(
             }
             else -> {}
         }
+    }
+
+    if (showResetPasswordDialog) {
+        CustomDialog(
+            type = DialogType.WARNING,
+            title = "비밀번호를 \n재설정하겠습니까?",
+            onDismissRequest = { showResetPasswordDialog = false },
+            button1Text = "취소",
+            button1Action = { showResetPasswordDialog = false },
+            button2Text = "재설정하기",
+            button2Action = {
+                showResetPasswordDialog = false
+                onResetPassword()
+            }
+        )
     }
 
     Column(
@@ -127,7 +145,7 @@ fun AuthScreen(
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
-                    ) { onResetPassword() }
+                    ) { showResetPasswordDialog = true }
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
