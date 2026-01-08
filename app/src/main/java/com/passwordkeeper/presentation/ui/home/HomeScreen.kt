@@ -294,8 +294,8 @@ fun HomeSearchField(
             .onFocusChanged { focusState ->
                 onSearchFocusChanged(focusState.isFocused)
             },
-        placeholder = { Text("계정 이름을 입력해 보세요") },
-        leadingIcon = {
+        placeholder = { Text("서비스명·아이디·메모를 입력해 보세요.") },
+        trailingIcon = {
             Icon(Icons.Default.Search, contentDescription = "검색")
         },
         singleLine = true,
