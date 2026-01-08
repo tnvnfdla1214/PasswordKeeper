@@ -224,7 +224,7 @@ fun PasswordListItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .padding(start = 12.dp, end = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
@@ -249,7 +249,6 @@ fun PasswordListItem(
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.Black
                 )
-                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = password.userId.ifBlank {
                         password.memo
@@ -261,6 +260,7 @@ fun PasswordListItem(
 
             if (isDeleteMode) {
                 Checkbox(
+                    modifier = Modifier.size(24.dp),
                     checked = isSelected,
                     onCheckedChange = { onClick() },
                     colors = CheckboxDefaults.colors(
@@ -331,8 +331,7 @@ fun HomeDeleteToggle(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
                     onClick = onToggleDeleteMode
-                )
-                .padding(end = 20.dp),
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(
@@ -344,7 +343,7 @@ fun HomeDeleteToggle(
                 )
             )
             Spacer(modifier = Modifier.size(8.dp))
-            Text("삭제하기", color = Color.Gray, fontSize = 14.sp)
+            Text("삭제", color = Color.Gray, fontSize = 14.sp)
         }
     }
 }
@@ -435,7 +434,7 @@ fun HomePasswordList(
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+        contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         item {
             HomeDeleteToggle(
