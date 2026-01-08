@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
@@ -17,6 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.passwordkeeper.presentation.ui.components.CustomDialog
 import com.passwordkeeper.presentation.ui.components.DialogType
+import com.passwordkeeper.presentation.ui.theme.Neutral100
+import com.passwordkeeper.presentation.ui.theme.Neutral50
+import com.passwordkeeper.presentation.ui.theme.Primary600
 import com.passwordkeeper.presentation.viewmodel.PasswordFormState
 import com.passwordkeeper.presentation.viewmodel.PasswordFormViewModel
 
@@ -96,7 +100,7 @@ fun PasswordFormScreen(
                 Text(
                     text = "서비스명",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 8.dp),
+                    modifier = Modifier.padding(bottom = 4.dp),
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 OutlinedTextField(
@@ -106,12 +110,21 @@ fun PasswordFormScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     readOnly = formState is PasswordFormState.ReadOnly,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Neutral50,
+                        unfocusedContainerColor = Neutral50,
+                        disabledContainerColor = Neutral50,
+                        focusedBorderColor = Primary600,
+                        unfocusedBorderColor = Neutral100,
+                        disabledBorderColor = Neutral100
+                    ),
                 )
 
                 Text(
                     text = "아이디",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 21.dp, bottom = 8.dp),
+                    modifier = Modifier.padding(top = 21.dp, bottom = 4.dp),
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
@@ -134,6 +147,15 @@ fun PasswordFormScreen(
                     singleLine = true,
                     readOnly = formState is PasswordFormState.ReadOnly,
                     interactionSource = userIdInteractionSource,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Neutral50,
+                        unfocusedContainerColor = Neutral50,
+                        disabledContainerColor = Neutral50,
+                        focusedBorderColor = Primary600,
+                        unfocusedBorderColor = Neutral100,
+                        disabledBorderColor = Neutral100
+                    ),
                     trailingIcon = if ((formState is PasswordFormState.ReadOnly) && userId.isNotBlank()) {
                         {
                             IconButton(onClick = {
@@ -148,7 +170,7 @@ fun PasswordFormScreen(
                 Text(
                     text = "비밀번호",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 21.dp, bottom = 8.dp),
+                    modifier = Modifier.padding(top = 21.dp, bottom = 4.dp),
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
@@ -171,6 +193,15 @@ fun PasswordFormScreen(
                     singleLine = true,
                     readOnly = formState is PasswordFormState.ReadOnly,
                     interactionSource = passwordInteractionSource,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Neutral50,
+                        unfocusedContainerColor = Neutral50,
+                        disabledContainerColor = Neutral50,
+                        focusedBorderColor = Primary600,
+                        unfocusedBorderColor = Neutral100,
+                        disabledBorderColor = Neutral100
+                    ),
                     trailingIcon = if ((formState is PasswordFormState.ReadOnly) && password.isNotBlank()) {
                         {
                             IconButton(onClick = {
@@ -185,7 +216,7 @@ fun PasswordFormScreen(
                 Text(
                     text = "메모",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 21.dp, bottom = 8.dp),
+                    modifier = Modifier.padding(top = 21.dp, bottom = 4.dp),
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
@@ -197,6 +228,15 @@ fun PasswordFormScreen(
                     minLines = 3,
                     maxLines = 5,
                     readOnly = formState is PasswordFormState.ReadOnly,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Neutral50,
+                        unfocusedContainerColor = Neutral50,
+                        disabledContainerColor = Neutral50,
+                        focusedBorderColor = Primary600,
+                        unfocusedBorderColor = Neutral100,
+                        disabledBorderColor = Neutral100
+                    ),
                 )
             }
 

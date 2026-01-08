@@ -12,7 +12,6 @@ val Primary400 = Color(0xFF4DB8FF)
 val Primary300 = Color(0xFF80D0FF)
 val Primary200 = Color(0xFFB3E5FF)
 val Primary100 = Color(0xFFE0F2FF)
-val Primary50 = Color(0xFFF5F9FF)
 
 // Neutral Color (회색/검은색)
 val Neutral900 = Color(0xFF000000)
@@ -37,7 +36,6 @@ val primaryColorScheme = mapOf(
     300 to Primary300,
     200 to Primary200,
     100 to Primary100,
-    50 to Primary50
 )
 
 val neutralColorScheme = mapOf(
