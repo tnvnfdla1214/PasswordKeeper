@@ -80,8 +80,6 @@ val Typography = Typography(
     )
 )
 
-// 확장 속성 - 더 명확한 이름으로 사용
-
 // T1
 val Typography.t1Medium: TextStyle
     get() = displaySmall
