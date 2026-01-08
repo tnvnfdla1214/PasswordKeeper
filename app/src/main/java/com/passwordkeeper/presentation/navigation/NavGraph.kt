@@ -13,6 +13,7 @@ import com.passwordkeeper.presentation.ui.auth.AuthScreen
 import com.passwordkeeper.presentation.ui.auth.ResetPasswordScreen
 import com.passwordkeeper.presentation.ui.form.PasswordFormScreen
 import com.passwordkeeper.presentation.ui.home.HomeScreen
+import com.passwordkeeper.presentation.ui.onboarding.OnboardingScreen
 
 @Composable
 fun NavGraph(
@@ -23,6 +24,16 @@ fun NavGraph(
         navController = navController,
         startDestination = startDestination
     ) {
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(
+                onStartClick = {
+                    navController.navigate(Screen.ResetPassword.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Screen.Auth.route) {
             AuthScreen(
                 onAuthSuccess = {

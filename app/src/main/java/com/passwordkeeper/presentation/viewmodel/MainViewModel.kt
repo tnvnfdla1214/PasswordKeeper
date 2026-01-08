@@ -29,7 +29,7 @@ class MainViewModel @Inject constructor(
             _startDestination.value = if (hasMasterPassword) {
                 Screen.Auth.route
             } else {
-                Screen.ResetPassword.route
+                Screen.Onboarding.route
             }
         }
     }

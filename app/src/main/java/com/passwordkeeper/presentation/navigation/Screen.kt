@@ -1,6 +1,7 @@
 package com.passwordkeeper.presentation.navigation
 
 sealed class Screen(val route: String) {
+    data object Onboarding : Screen("onboarding")
     data object Auth : Screen("auth")
     data object ResetPassword : Screen("resetPassword")
     data object Home : Screen("home")
