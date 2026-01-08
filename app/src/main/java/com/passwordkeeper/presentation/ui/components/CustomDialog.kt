@@ -47,7 +47,7 @@ fun CustomDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 22.dp, horizontal = 18.dp),
+                    .padding(vertical = 36.dp, horizontal = 18.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {

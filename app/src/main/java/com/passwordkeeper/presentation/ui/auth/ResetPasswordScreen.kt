@@ -1,15 +1,15 @@
 package com.passwordkeeper.presentation.ui.auth
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.passwordkeeper.R
 import com.passwordkeeper.presentation.ui.components.CustomDialog
 import com.passwordkeeper.presentation.ui.components.DialogType
 import com.passwordkeeper.presentation.viewmodel.ResetPasswordViewModel
@@ -58,7 +58,7 @@ fun ResetPasswordScreen(
     if (showSuccessDialog) {
         CustomDialog(
             type = DialogType.CONFIRM,
-            title = "비밀번호가 변경되었습니다",
+            title = "비밀번호가 설정되었습니다",
             onDismissRequest = {
                 showSuccessDialog = false
                 onResetSuccess()
@@ -79,10 +79,24 @@ fun ResetPasswordScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { },
+                modifier = Modifier.padding(top = 64.dp),
+                title = {
+                    Text(
+                        text = if (showStep == 1) {
+                            "새로운 비밀번호를 눌러 주세요"
+                        } else {
+                            "비밀번호를 다시 한번\n눌러 주세요"
+                        },
+                        textAlign = TextAlign.Center
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            painter = painterResource(id = R.drawable.ic_screen_backstack),
+                            contentDescription = "뒤로가기"
+                        )
                     }
                 }
             )
@@ -92,28 +106,8 @@ fun ResetPasswordScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp),
+                .padding(top = 60.dp, start = 16.dp, end = 16.dp),
         ) {
-            Box(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                Text(
-                    text = if (showStep == 1) {
-                        "새로운 비밀번호를 눌러 주세요"
-                    } else {
-                        "비밀번호를 다시 한번\n눌러 주세요"
-                    },
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 16.dp)
-                )
-            }
-
-            Spacer(Modifier.height(20.dp))
 
             Column {
                 PasswordIndicator(
