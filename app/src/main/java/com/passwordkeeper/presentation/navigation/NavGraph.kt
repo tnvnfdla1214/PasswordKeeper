@@ -27,9 +27,7 @@ fun NavGraph(
         composable(Screen.Onboarding.route) {
             OnboardingScreen(
                 onStartClick = {
-                    navController.navigate(Screen.ResetPassword.route) {
-                        popUpTo(Screen.Onboarding.route) { inclusive = true }
-                    }
+                    navController.navigate(Screen.ResetPassword.route)
                 }
             )
         }
@@ -50,15 +48,11 @@ fun NavGraph(
         composable(Screen.ResetPassword.route) {
             ResetPasswordScreen(
                 onBackClick = {
-                    if (startDestination == Screen.ResetPassword.route) {
-                        // 첫 시작이 ResetPassword인 경우 뒤로가기 차단
-                    } else {
-                        navController.popBackStack()
-                    }
+                    navController.popBackStack()
                 },
                 onResetSuccess = {
                     navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.ResetPassword.route) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )
