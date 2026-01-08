@@ -71,8 +71,10 @@ fun HomeScreen(
                 )
             )
             .onGloballyPositioned { coordinates ->
-                with(density) {
-                    screenHeight = coordinates.size.height.toDp()
+                if (screenHeight == 0.dp) {
+                    with(density) {
+                        screenHeight = coordinates.size.height.toDp()
+                    }
                 }
             }
             .clickable(
