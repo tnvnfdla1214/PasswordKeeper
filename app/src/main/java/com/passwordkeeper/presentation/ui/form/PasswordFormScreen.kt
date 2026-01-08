@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
@@ -93,10 +95,14 @@ fun PasswordFormScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(start = 16.dp, end = 16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .imePadding()
         ) {
-            Column {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(start = 16.dp, end = 16.dp)
+            ) {
                 Text(
                     text = "서비스명",
                     style = MaterialTheme.typography.titleMedium,
