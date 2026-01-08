@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -27,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.passwordkeeper.presentation.viewmodel.AuthState
 import com.passwordkeeper.presentation.viewmodel.AuthViewModel
 import com.passwordkeeper.util.BiometricAuthManager
+import androidx.compose.runtime.remember
 
 @Composable
 fun AuthScreen(
@@ -122,7 +124,10 @@ fun AuthScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onResetPassword() }
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onResetPassword() }
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
