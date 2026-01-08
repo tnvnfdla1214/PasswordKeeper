@@ -22,6 +22,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -51,9 +52,8 @@ fun HomeScreen(
     var isSearchFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
-    var screenHeight by remember { mutableStateOf(0.dp) }
-    val density = LocalDensity.current
-    //Todo : 앱을 켠상태로 홀드 후 다시 들어와서 검색을 누르면 깜박 거림 수정해야 함
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
     BackHandler(enabled = isSearchFocused || isDeleteMode) {
         when {
             isSearchFocused -> focusManager.clearFocus()
@@ -70,13 +70,6 @@ fun HomeScreen(
                     0.2f to Color(0xFF122035)
                 )
             )
-            .onGloballyPositioned { coordinates ->
-                if (screenHeight == 0.dp) {
-                    with(density) {
-                        screenHeight = coordinates.size.height.toDp()
-                    }
-                }
-            }
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
