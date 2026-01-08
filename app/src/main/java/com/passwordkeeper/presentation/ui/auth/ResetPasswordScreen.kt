@@ -21,61 +21,20 @@ fun ResetPasswordScreen(
     onResetSuccess: () -> Unit,
     viewModel: ResetPasswordViewModel = hiltViewModel()
 ) {
-    var oldPassword by remember { mutableStateOf("") }
-    var newPassword by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var showStep by remember { mutableIntStateOf(0) } // 0: 기존 비밀번호, 1: 새 비밀번호, 2: 확인 비밀번호
-    var showSuccessDialog by remember { mutableStateOf(false) }
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
-
-    LaunchedEffect(oldPassword) {
-        if (oldPassword.length < 4) return@LaunchedEffect
-
-        viewModel.validateOldPassword(oldPassword) { isValid ->
-            if (isValid) {
-                showStep = 1
-            } else {
-                errorMessage = "기존 비밀번호가 일치하지 않습니다"
-                showErrorDialog = true
-                oldPassword = ""
-            }
-        }
-    }
-
-    LaunchedEffect(newPassword) {
-        if (newPassword.length == 4) {
-            showStep = 2
-        }
-    }
-
-    LaunchedEffect(confirmPassword) {
-        if (confirmPassword.length < 4) return@LaunchedEffect
-
-        if (newPassword != confirmPassword) {
-            errorMessage = "비밀번호가 일치하지 않습니다"
-            showErrorDialog = true
-            confirmPassword = ""
-            return@LaunchedEffect
-        }
-
-        viewModel.savePassword(newPassword) { success ->
-            if (success) {
-                showSuccessDialog = true
-            } else {
-                errorMessage = "비밀번호 저장에 실패했습니다"
-                showErrorDialog = true
-                confirmPassword = ""
-            }
-        }
-    }
+    val oldPassword by viewModel.oldPassword
+    val newPassword by viewModel.newPassword
+    val confirmPassword by viewModel.confirmPassword
+    val showStep by viewModel.showStep
+    val showSuccessDialog by viewModel.showSuccessDialog
+    val showErrorDialog by viewModel.showErrorDialog
+    val errorMessage by viewModel.errorMessage
 
     if (showSuccessDialog) {
         CustomDialog(
             type = DialogType.CONFIRM,
             title = "비밀번호가 설정되었습니다",
             onDismissRequest = {
-                showSuccessDialog = false
+                viewModel.dismissSuccessDialog()
                 onResetSuccess()
             },
         )
@@ -85,9 +44,9 @@ fun ResetPasswordScreen(
         CustomDialog(
             type = DialogType.WARNING,
             title = errorMessage,
-            onDismissRequest = { showErrorDialog = false },
+            onDismissRequest = { viewModel.dismissErrorDialog() },
             button2Text = "확인",
-            button2Action = { showErrorDialog = false }
+            button2Action = { viewModel.dismissErrorDialog() }
         )
     }
 
@@ -140,29 +99,13 @@ fun ResetPasswordScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onNumberClick = { number ->
                         when (showStep) {
-                            0 -> if (oldPassword.length < 4) {
-                                oldPassword += number.toString()
-                            }
-                            1 -> if (newPassword.length < 4) {
-                                newPassword += number.toString()
-                            }
-                            2 -> if (confirmPassword.length < 4) {
-                                confirmPassword += number.toString()
-                            }
+                            0 -> viewModel.onOldPasswordInput(number.toString())
+                            1 -> viewModel.onNewPasswordInput(number.toString())
+                            2 -> viewModel.onConfirmPasswordInput(number.toString())
                         }
                     },
                     onDeleteClick = {
-                        when (showStep) {
-                            0 -> if (oldPassword.isNotEmpty()) {
-                                oldPassword = oldPassword.dropLast(1)
-                            }
-                            1 -> if (newPassword.isNotEmpty()) {
-                                newPassword = newPassword.dropLast(1)
-                            }
-                            2 -> if (confirmPassword.isNotEmpty()) {
-                                confirmPassword = confirmPassword.dropLast(1)
-                            }
-                        }
+                        viewModel.onDeleteClick()
                     },
                 )
             }
