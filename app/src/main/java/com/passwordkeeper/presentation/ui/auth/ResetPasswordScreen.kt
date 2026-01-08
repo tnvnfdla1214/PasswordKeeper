@@ -21,12 +21,27 @@ fun ResetPasswordScreen(
     onResetSuccess: () -> Unit,
     viewModel: ResetPasswordViewModel = hiltViewModel()
 ) {
+    var oldPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var showStep by remember { mutableIntStateOf(1) } // 1: 새 비밀번호, 2: 확인 비밀번호
+    var showStep by remember { mutableIntStateOf(0) } // 0: 기존 비밀번호, 1: 새 비밀번호, 2: 확인 비밀번호
     var showSuccessDialog by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+
+    LaunchedEffect(oldPassword) {
+        if (oldPassword.length < 4) return@LaunchedEffect
+
+        viewModel.validateOldPassword(oldPassword) { isValid ->
+            if (isValid) {
+                showStep = 1
+            } else {
+                errorMessage = "기존 비밀번호가 일치하지 않습니다"
+                showErrorDialog = true
+                oldPassword = ""
+            }
+        }
+    }
 
     LaunchedEffect(newPassword) {
         if (newPassword.length == 4) {
@@ -82,10 +97,10 @@ fun ResetPasswordScreen(
                 modifier = Modifier.padding(top = 64.dp),
                 title = {
                     Text(
-                        text = if (showStep == 1) {
-                            "새로운 비밀번호를 눌러 주세요"
-                        } else {
-                            "비밀번호를 다시 한번\n눌러 주세요"
+                        text = when (showStep) {
+                            0 -> "기존 비밀번호를 눌러 주세요"
+                            1 -> "새로운 비밀번호를 눌러 주세요"
+                            else -> "비밀번호를 다시 한번\n눌러 주세요"
                         },
                         textAlign = TextAlign.Center
                     )
@@ -112,7 +127,11 @@ fun ResetPasswordScreen(
             Column {
                 PasswordIndicator(
                     modifier = Modifier.fillMaxWidth(),
-                    passwordLength = if (showStep == 1) newPassword.length else confirmPassword.length,
+                    passwordLength = when (showStep) {
+                        0 -> oldPassword.length
+                        1 -> newPassword.length
+                        else -> confirmPassword.length
+                    },
                 )
 
                 Spacer(Modifier.height(40.dp))
@@ -120,17 +139,29 @@ fun ResetPasswordScreen(
                 PasswordKeypad(
                     modifier = Modifier.fillMaxWidth(),
                     onNumberClick = { number ->
-                        if (showStep == 1 && newPassword.length < 4) {
-                            newPassword += number.toString()
-                        } else if (showStep == 2 && confirmPassword.length < 4) {
-                            confirmPassword += number.toString()
+                        when (showStep) {
+                            0 -> if (oldPassword.length < 4) {
+                                oldPassword += number.toString()
+                            }
+                            1 -> if (newPassword.length < 4) {
+                                newPassword += number.toString()
+                            }
+                            2 -> if (confirmPassword.length < 4) {
+                                confirmPassword += number.toString()
+                            }
                         }
                     },
                     onDeleteClick = {
-                        if (showStep == 1 && newPassword.isNotEmpty()) {
-                            newPassword = newPassword.dropLast(1)
-                        } else if (showStep == 2 && confirmPassword.isNotEmpty()) {
-                            confirmPassword = confirmPassword.dropLast(1)
+                        when (showStep) {
+                            0 -> if (oldPassword.isNotEmpty()) {
+                                oldPassword = oldPassword.dropLast(1)
+                            }
+                            1 -> if (newPassword.isNotEmpty()) {
+                                newPassword = newPassword.dropLast(1)
+                            }
+                            2 -> if (confirmPassword.isNotEmpty()) {
+                                confirmPassword = confirmPassword.dropLast(1)
+                            }
                         }
                     },
                 )

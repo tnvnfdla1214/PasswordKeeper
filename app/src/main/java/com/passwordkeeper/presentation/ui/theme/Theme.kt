@@ -11,30 +11,41 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF6200EE),
+    // Primary Colors
+    primary = Primary600,
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFBB86FC),
-    onPrimaryContainer = Color.Black,
-    secondary = Color(0xFF03DAC6),
-    onSecondary = Color.Black,
-    secondaryContainer = Color(0xFF018786),
-    onSecondaryContainer = Color.White,
-    tertiary = Color(0xFF03DAC6),
-    onTertiary = Color.Black,
-    tertiaryContainer = Color(0xFF018786),
-    onTertiaryContainer = Color.White,
+    primaryContainer = Primary100,
+    onPrimaryContainer = Primary900,
+
+    // Secondary Colors
+    secondary = Primary400,
+    onSecondary = Color.White,
+    secondaryContainer = Primary200,
+    onSecondaryContainer = Primary800,
+
+    // Tertiary Colors
+    tertiary = Primary500,
+    onTertiary = Color.White,
+    tertiaryContainer = Primary100,
+    onTertiaryContainer = Primary900,
+
+    // Error Colors
     error = Color(0xFFB00020),
     onError = Color.White,
     errorContainer = Color(0xFFFDE7E9),
     onErrorContainer = Color(0xFF410002),
+
+    // Background & Surface
     background = Color.White,
-    onBackground = Color.Black,
+    onBackground = Neutral900,
     surface = Color.White,
-    onSurface = Color.Black,
-    surfaceVariant = Color(0xFFF5F5F5),
-    onSurfaceVariant = Color(0xFF666666),
-    outline = Color(0xFFDDDDDD),
-    outlineVariant = Color(0xFFEEEEEE)
+    onSurface = Neutral900,
+    surfaceVariant = Neutral50,
+    onSurfaceVariant = Neutral600,
+
+    // Outline
+    outline = Neutral300,
+    outlineVariant = Neutral100
 )
 
 @Composable
