@@ -14,6 +14,7 @@ import com.passwordkeeper.presentation.ui.auth.ResetPasswordScreen
 import com.passwordkeeper.presentation.ui.form.PasswordFormScreen
 import com.passwordkeeper.presentation.ui.home.HomeScreen
 import com.passwordkeeper.presentation.ui.onboarding.OnboardingScreen
+import com.passwordkeeper.presentation.ui.setting.SettingScreen
 
 @Composable
 fun NavGraph(
@@ -58,6 +59,14 @@ fun NavGraph(
             )
         }
 
+        composable(Screen.Setting.route) {
+            SettingScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
         composable(Screen.Home.route) {
             val activity = LocalContext.current as? Activity
 
@@ -71,6 +80,9 @@ fun NavGraph(
                 },
                 onAddClick = {
                     navController.navigate(Screen.Form.createRoute())
+                },
+                onSettingClick = {
+                    navController.navigate(Screen.Setting.route)
                 }
             )
         }

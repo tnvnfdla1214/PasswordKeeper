@@ -42,7 +42,8 @@ import com.passwordkeeper.presentation.viewmodel.HomeViewModel
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onItemClick: (Long) -> Unit,
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    onSettingClick: () -> Unit
 ) {
     val items by viewModel.items.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -93,7 +94,8 @@ fun HomeScreen(
                 focusManager.clearFocus()
                 viewModel.updateLastAccessed(itemId)
                 onItemClick(itemId)
-            }
+            },
+            onSettingClick = onSettingClick
         )
 
         HomeBottomScaffoldButton(
@@ -120,7 +122,8 @@ fun BoxScope.HomeContentSection(
     onToggleItemSelection: (Long) -> Unit,
     passwords: List<Password>,
     focusManager: androidx.compose.ui.focus.FocusManager,
-    onItemClick: (Long) -> Unit
+    onItemClick: (Long) -> Unit,
+    onSettingClick: () -> Unit
 ) {
     var headerHeight by remember { mutableStateOf(0.dp) }
     var textHeight by remember { mutableStateOf(0.dp) }
@@ -146,20 +149,36 @@ fun BoxScope.HomeContentSection(
                 .padding(bottom = textSpacer)
         ) {
             Spacer(modifier = Modifier.height(108.dp))
-            Text(
-                "${itemsSize}개의 내 정보가\n안전하게 저장돼 있어요",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                lineHeight = 32.sp,
+            Row(
                 modifier = Modifier
-                    .onGloballyPositioned { coordinates ->
-                        with(density) {
-                            textHeight = coordinates.size.height.toDp()
+                    .fillMaxWidth()
+                    .padding(start = 21.dp, end = 18.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    "${itemsSize}개의 내 정보가\n안전하게 저장돼 있어요",
+                    color = Color.White,
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    lineHeight = 32.sp,
+                    modifier = Modifier
+                        .onGloballyPositioned { coordinates ->
+                            with(density) {
+                                textHeight = coordinates.size.height.toDp()
+                            }
                         }
-                    }
-                    .padding(start = 21.dp)
-            )
+                )
+
+                Image(
+                    modifier = Modifier
+                        .size(20.dp, 16.dp)
+                        .clickable { onSettingClick() },
+                    painter = painterResource(id = com.passwordkeeper.R.drawable.ic_setting),
+                    contentDescription = "세팅"
+                )
+            }
+
         }
         Column(
             modifier = Modifier

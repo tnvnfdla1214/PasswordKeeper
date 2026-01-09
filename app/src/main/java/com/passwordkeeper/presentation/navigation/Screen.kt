@@ -10,4 +10,5 @@ sealed class Screen(val route: String) {
             if (passwordId != null) "form?${NavArgs.PASSWORD_ID}=$passwordId"
             else "form"
     }
+    data object Setting : Screen("setting")
 }
