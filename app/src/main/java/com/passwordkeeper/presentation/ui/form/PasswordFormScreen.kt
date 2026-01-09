@@ -1,5 +1,6 @@
 package com.passwordkeeper.presentation.ui.form
 
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -14,10 +15,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.passwordkeeper.util.InterstitialAdManager
 import com.passwordkeeper.presentation.ui.components.CustomDialog
 import com.passwordkeeper.presentation.ui.components.DialogType
 import com.passwordkeeper.presentation.ui.theme.Neutral100
@@ -45,6 +48,13 @@ fun PasswordFormScreen(
     }
 
     val clipboardManager = LocalClipboardManager.current
+    val context = LocalContext.current
+    val adManager = remember { InterstitialAdManager() }
+
+    // 화면 진입 시 광고 미리 로드
+    LaunchedEffect(Unit) {
+        adManager.loadAd(context)
+    }
 
     var savedState by remember { mutableStateOf<PasswordFormState?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -257,6 +267,12 @@ fun PasswordFormScreen(
                 onSaveClick = {
                     viewModel.savePassword(onSuccess = { state ->
                         savedState = state
+                        if (state is PasswordFormState.Register) {
+                            val activity = context as? Activity
+                            if (activity != null) {
+                                adManager.showAd(activity) {}
+                            }
+                        }
                     })
                 },
                 onEditClick = {
