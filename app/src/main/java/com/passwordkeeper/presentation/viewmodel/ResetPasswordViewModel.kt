@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.passwordkeeper.domain.usecase.HasMasterPasswordUseCase
 import com.passwordkeeper.domain.usecase.SaveMasterPasswordUseCase
 import com.passwordkeeper.domain.usecase.VerifyMasterPasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ResetPasswordViewModel @Inject constructor(
     private val saveMasterPasswordUseCase: SaveMasterPasswordUseCase,
-    private val verifyMasterPasswordUseCase: VerifyMasterPasswordUseCase
+    private val verifyMasterPasswordUseCase: VerifyMasterPasswordUseCase,
+    private val hasMasterPasswordUseCase: HasMasterPasswordUseCase
 ) : ViewModel() {
 
     private val _oldPassword = mutableStateOf("")
@@ -37,6 +39,13 @@ class ResetPasswordViewModel @Inject constructor(
 
     private val _errorMessage = mutableStateOf("")
     val errorMessage: State<String> = _errorMessage
+
+    init {
+        viewModelScope.launch {
+            val hasMasterPassword = hasMasterPasswordUseCase()
+            _showStep.intValue = if (hasMasterPassword) 0 else 1
+        }
+    }
 
     fun onOldPasswordInput(digit: String) {
         if (_oldPassword.value.length < 4) {
