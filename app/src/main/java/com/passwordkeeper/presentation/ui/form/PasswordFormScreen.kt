@@ -35,7 +35,6 @@ fun PasswordFormScreen(
     viewModel: PasswordFormViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
 ) {
-    //TOdo: 키보드가 올라올때 화면이 올라오지 않는 이슈 수정해야함
     val serviceName by viewModel.serviceName.collectAsState()
     val userId by viewModel.userId.collectAsState()
     val password by viewModel.password.collectAsState()

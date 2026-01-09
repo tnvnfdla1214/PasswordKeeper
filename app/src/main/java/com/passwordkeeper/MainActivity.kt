@@ -9,6 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.MobileAds
@@ -24,6 +25,9 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 키보드에 대응하여 imePadding이 작동하도록 설정
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         // AdMob 초기화
         MobileAds.initialize(this) {}
