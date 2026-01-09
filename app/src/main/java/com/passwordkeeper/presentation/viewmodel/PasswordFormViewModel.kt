@@ -3,6 +3,7 @@ package com.passwordkeeper.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.passwordkeeper.data.local.datastore.SaveCountDataSource
 import com.passwordkeeper.domain.model.Password
 import com.passwordkeeper.domain.usecase.DeleteIPasswordUseCase
 import com.passwordkeeper.domain.usecase.GetPasswordByIdUseCase
@@ -22,6 +23,7 @@ class PasswordFormViewModel @Inject constructor(
     private val updatePasswordUseCase: UpdatePasswordUseCase,
     private val getPasswordByIdUseCase: GetPasswordByIdUseCase,
     private val deletePasswordUseCase: DeleteIPasswordUseCase,
+    private val saveCountDataSource: SaveCountDataSource,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -74,7 +76,7 @@ class PasswordFormViewModel @Inject constructor(
         }
     }
 
-    fun savePassword(onSuccess: (PasswordFormState) -> Unit) {
+    fun savePassword(onSuccess: (PasswordFormState, Boolean) -> Unit) {
         viewModelScope.launch {
             val password = createPasswordObject()
 
@@ -83,12 +85,14 @@ class PasswordFormViewModel @Inject constructor(
                     val newId = insertPasswordUseCase(password)
                     passwordId = newId
                     _formState.value = PasswordFormState.ReadOnly(newId)
-                    onSuccess(PasswordFormState.Register)
+
+                    val count = saveCountDataSource.incrementSaveCount()
+                    onSuccess(PasswordFormState.Register, shouldShowAd(count))
                 }
                 is PasswordFormState.Update -> {
                     updatePasswordUseCase(password)
                     _formState.value = PasswordFormState.ReadOnly(state.id)
-                    onSuccess(PasswordFormState.Update(state.id))
+                    onSuccess(PasswordFormState.Update(state.id), false)
                 }
                 is PasswordFormState.ReadOnly -> {
                     // ReadOnly 상태에서는 저장하지 않음
@@ -132,6 +136,10 @@ class PasswordFormViewModel @Inject constructor(
         memo = _memo.value,
         activityTime = System.currentTimeMillis()
     )
+
+    private fun shouldShowAd(count : Int): Boolean {
+        return count >= 6 && count % 3 == 0
+    }
 }
 
 sealed class PasswordFormState {

@@ -265,9 +265,9 @@ fun PasswordFormScreen(
                 memo = memo,
                 onDeleteClick = { showDeleteDialog = true },
                 onSaveClick = {
-                    viewModel.savePassword(onSuccess = { state ->
+                    viewModel.savePassword(onSuccess = { state, shouldShowAd ->
                         savedState = state
-                        if (state is PasswordFormState.Register) {
+                        if (shouldShowAd) {
                             val activity = context as? Activity
                             if (activity != null) {
                                 adManager.showAd(activity) {}
