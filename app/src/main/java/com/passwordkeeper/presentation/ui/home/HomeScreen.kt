@@ -137,6 +137,7 @@ fun BoxScope.HomeContentSection(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .systemBarsPadding()
             .align(Alignment.TopStart)
     ) {
         Column(
