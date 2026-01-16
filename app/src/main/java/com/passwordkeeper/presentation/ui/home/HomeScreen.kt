@@ -259,13 +259,14 @@ fun PasswordListItem(
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f).padding(vertical = 8.dp)
             ) {
                 Text(
                     text = password.title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = Color.Black
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = password.userId.ifBlank {
                         password.memo
