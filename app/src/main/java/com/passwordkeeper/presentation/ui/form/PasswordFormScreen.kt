@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.passwordkeeper.util.InterstitialAdManager
@@ -41,10 +40,6 @@ fun PasswordFormScreen(
     val memo by viewModel.memo.collectAsState()
 
     val formState by viewModel.formState.collectAsState()
-
-    LaunchedEffect(formState) {
-        Log.d("qweqwe", "Current formState: $formState")
-    }
 
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
@@ -257,6 +252,7 @@ fun PasswordFormScreen(
             }
 
             PasswordFormButtons(
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
                 formState = formState,
                 serviceName = serviceName,
                 userId = userId,
@@ -284,6 +280,7 @@ fun PasswordFormScreen(
 
 @Composable
 private fun PasswordFormButtons(
+    modifier: Modifier,
     formState: PasswordFormState,
     serviceName: String,
     userId: String,
@@ -299,10 +296,8 @@ private fun PasswordFormButtons(
     when (formState) {
         is PasswordFormState.Register -> {
             Button(
+                modifier = modifier,
                 onClick = onSaveClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
                 enabled = isFormValid
             ) {
                 Text("저장하기")
@@ -310,9 +305,7 @@ private fun PasswordFormButtons(
         }
         is PasswordFormState.ReadOnly -> {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
+                modifier = modifier,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Button(
@@ -336,9 +329,7 @@ private fun PasswordFormButtons(
         is PasswordFormState.Update -> {
             Button(
                 onClick = onSaveClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
+                modifier = modifier,
                 enabled = isFormValid
             ) {
                 Text("수정하기")
