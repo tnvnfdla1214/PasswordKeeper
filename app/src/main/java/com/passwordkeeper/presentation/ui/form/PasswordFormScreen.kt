@@ -82,199 +82,194 @@ fun PasswordFormScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(if(formState is PasswordFormState.ReadOnly) "내 정보" else "")
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
-                    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+            .imePadding()
+    ) {
+        CenterAlignedTopAppBar(
+            title = {
+                Text(if(formState is PasswordFormState.ReadOnly) "내 정보" else "")
+            },
+            navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "뒤로가기")
                 }
-            )
-        }
-    ) { paddingValues ->
+            }
+        )
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .imePadding()
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(start = 16.dp, end = 16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(start = 16.dp, end = 16.dp)
-            ) {
-                Text(
-                    text = "서비스명",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                OutlinedTextField(
-                    value = serviceName,
-                    onValueChange = { viewModel.onServiceNameChange(it) },
-                    label = { },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    readOnly = formState is PasswordFormState.ReadOnly,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Neutral50,
-                        unfocusedContainerColor = Neutral50,
-                        disabledContainerColor = Neutral50,
-                        focusedBorderColor = Primary600,
-                        unfocusedBorderColor = Neutral100,
-                        disabledBorderColor = Neutral100
-                    ),
-                )
+            Text(
+                text = "서비스명",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 4.dp),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            OutlinedTextField(
+                value = serviceName,
+                onValueChange = { viewModel.onServiceNameChange(it) },
+                label = { },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                readOnly = formState is PasswordFormState.ReadOnly,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Neutral50,
+                    unfocusedContainerColor = Neutral50,
+                    disabledContainerColor = Neutral50,
+                    focusedBorderColor = Primary600,
+                    unfocusedBorderColor = Neutral100,
+                    disabledBorderColor = Neutral100
+                ),
+            )
 
-                Text(
-                    text = "아이디",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 21.dp, bottom = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+            Text(
+                text = "아이디",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 21.dp, bottom = 4.dp),
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
-                val userIdInteractionSource = remember { MutableInteractionSource() }
-                LaunchedEffect(userIdInteractionSource) {
-                    userIdInteractionSource.interactions.collect { interaction ->
-                        if (interaction is PressInteraction.Press &&
-                            formState is PasswordFormState.ReadOnly &&
-                            userId.isNotBlank()) {
-                            clipboardManager.setText(AnnotatedString(userId))
-                        }
+            val userIdInteractionSource = remember { MutableInteractionSource() }
+            LaunchedEffect(userIdInteractionSource) {
+                userIdInteractionSource.interactions.collect { interaction ->
+                    if (interaction is PressInteraction.Press &&
+                        formState is PasswordFormState.ReadOnly &&
+                        userId.isNotBlank()) {
+                        clipboardManager.setText(AnnotatedString(userId))
                     }
                 }
-
-                OutlinedTextField(
-                    value = userId,
-                    onValueChange = { viewModel.onUserIdChange(it) },
-                    label = { },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    readOnly = formState is PasswordFormState.ReadOnly,
-                    interactionSource = userIdInteractionSource,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Neutral50,
-                        unfocusedContainerColor = Neutral50,
-                        disabledContainerColor = Neutral50,
-                        focusedBorderColor = Primary600,
-                        unfocusedBorderColor = Neutral100,
-                        disabledBorderColor = Neutral100
-                    ),
-                    trailingIcon = if ((formState is PasswordFormState.ReadOnly) && userId.isNotBlank()) {
-                        {
-                            IconButton(onClick = {
-                                clipboardManager.setText(AnnotatedString(userId))
-                            }) {
-                                Icon(Icons.Default.ContentCopy, contentDescription = "복사")
-                            }
-                        }
-                    } else null
-                )
-
-                Text(
-                    text = "비밀번호",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 21.dp, bottom = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                val passwordInteractionSource = remember { MutableInteractionSource() }
-                LaunchedEffect(passwordInteractionSource) {
-                    passwordInteractionSource.interactions.collect { interaction ->
-                        if (interaction is PressInteraction.Press &&
-                            formState is PasswordFormState.ReadOnly &&
-                            password.isNotBlank()) {
-                            clipboardManager.setText(AnnotatedString(password))
-                        }
-                    }
-                }
-
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { viewModel.onPasswordChange(it) },
-                    label = { },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    readOnly = formState is PasswordFormState.ReadOnly,
-                    interactionSource = passwordInteractionSource,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Neutral50,
-                        unfocusedContainerColor = Neutral50,
-                        disabledContainerColor = Neutral50,
-                        focusedBorderColor = Primary600,
-                        unfocusedBorderColor = Neutral100,
-                        disabledBorderColor = Neutral100
-                    ),
-                    trailingIcon = if ((formState is PasswordFormState.ReadOnly) && password.isNotBlank()) {
-                        {
-                            IconButton(onClick = {
-                                clipboardManager.setText(AnnotatedString(password))
-                            }) {
-                                Icon(Icons.Default.ContentCopy, contentDescription = "복사")
-                            }
-                        }
-                    } else null
-                )
-
-                Text(
-                    text = "메모",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 21.dp, bottom = 4.dp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                OutlinedTextField(
-                    value = memo,
-                    onValueChange = { viewModel.onMemoChange(it) },
-                    label = { },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 3,
-                    maxLines = 5,
-                    readOnly = formState is PasswordFormState.ReadOnly,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Neutral50,
-                        unfocusedContainerColor = Neutral50,
-                        disabledContainerColor = Neutral50,
-                        focusedBorderColor = Primary600,
-                        unfocusedBorderColor = Neutral100,
-                        disabledBorderColor = Neutral100
-                    ),
-                )
             }
-            //todo : 키보드가 올라오면 버튼과 키보드 사이에 padding이 존재하는데 이유가 뭔지 모르겠음
-            PasswordFormButtons(
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp),
-                formState = formState,
-                serviceName = serviceName,
-                userId = userId,
-                password = password,
-                memo = memo,
-                onDeleteClick = { showDeleteDialog = true },
-                onSaveClick = {
-                    viewModel.savePassword(onSuccess = { state, shouldShowAd ->
-                        savedState = state
-                        if (shouldShowAd) {
-                            val activity = context as? Activity
-                            if (activity != null) {
-                                adManager.showAd(activity) {}
-                            }
+
+            OutlinedTextField(
+                value = userId,
+                onValueChange = { viewModel.onUserIdChange(it) },
+                label = { },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                readOnly = formState is PasswordFormState.ReadOnly,
+                interactionSource = userIdInteractionSource,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Neutral50,
+                    unfocusedContainerColor = Neutral50,
+                    disabledContainerColor = Neutral50,
+                    focusedBorderColor = Primary600,
+                    unfocusedBorderColor = Neutral100,
+                    disabledBorderColor = Neutral100
+                ),
+                trailingIcon = if ((formState is PasswordFormState.ReadOnly) && userId.isNotBlank()) {
+                    {
+                        IconButton(onClick = {
+                            clipboardManager.setText(AnnotatedString(userId))
+                        }) {
+                            Icon(Icons.Default.ContentCopy, contentDescription = "복사")
                         }
-                    })
-                },
-                onEditClick = {
-                    viewModel.switchToUpdateMode()
+                    }
+                } else null
+            )
+
+            Text(
+                text = "비밀번호",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 21.dp, bottom = 4.dp),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            val passwordInteractionSource = remember { MutableInteractionSource() }
+            LaunchedEffect(passwordInteractionSource) {
+                passwordInteractionSource.interactions.collect { interaction ->
+                    if (interaction is PressInteraction.Press &&
+                        formState is PasswordFormState.ReadOnly &&
+                        password.isNotBlank()) {
+                        clipboardManager.setText(AnnotatedString(password))
+                    }
                 }
+            }
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = { viewModel.onPasswordChange(it) },
+                label = { },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                readOnly = formState is PasswordFormState.ReadOnly,
+                interactionSource = passwordInteractionSource,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Neutral50,
+                    unfocusedContainerColor = Neutral50,
+                    disabledContainerColor = Neutral50,
+                    focusedBorderColor = Primary600,
+                    unfocusedBorderColor = Neutral100,
+                    disabledBorderColor = Neutral100
+                ),
+                trailingIcon = if ((formState is PasswordFormState.ReadOnly) && password.isNotBlank()) {
+                    {
+                        IconButton(onClick = {
+                            clipboardManager.setText(AnnotatedString(password))
+                        }) {
+                            Icon(Icons.Default.ContentCopy, contentDescription = "복사")
+                        }
+                    }
+                } else null
+            )
+
+            Text(
+                text = "메모",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 21.dp, bottom = 4.dp),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            OutlinedTextField(
+                value = memo,
+                onValueChange = { viewModel.onMemoChange(it) },
+                label = { },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                maxLines = 5,
+                readOnly = formState is PasswordFormState.ReadOnly,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Neutral50,
+                    unfocusedContainerColor = Neutral50,
+                    disabledContainerColor = Neutral50,
+                    focusedBorderColor = Primary600,
+                    unfocusedBorderColor = Neutral100,
+                    disabledBorderColor = Neutral100
+                ),
             )
         }
+        //todo : 키보드가 올라오면 버튼과 키보드 사이에 padding이 존재하는데 이유가 뭔지 모르겠음
+        PasswordFormButtons(
+            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp),
+            formState = formState,
+            serviceName = serviceName,
+            userId = userId,
+            password = password,
+            memo = memo,
+            onDeleteClick = { showDeleteDialog = true },
+            onSaveClick = {
+                viewModel.savePassword(onSuccess = { state, shouldShowAd ->
+                    savedState = state
+                    if (shouldShowAd) {
+                        val activity = context as? Activity
+                        if (activity != null) {
+                            adManager.showAd(activity) {}
+                        }
+                    }
+                })
+            },
+            onEditClick = {
+                viewModel.switchToUpdateMode()
+            }
+        )
     }
 }
 
