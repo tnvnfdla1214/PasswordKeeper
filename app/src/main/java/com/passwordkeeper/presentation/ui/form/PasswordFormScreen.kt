@@ -250,9 +250,9 @@ fun PasswordFormScreen(
                     ),
                 )
             }
-
+            //todo : 키보드가 올라오면 버튼과 키보드 사이에 padding이 존재하는데 이유가 뭔지 모르겠음
             PasswordFormButtons(
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 48.dp),
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp),
                 formState = formState,
                 serviceName = serviceName,
                 userId = userId,
