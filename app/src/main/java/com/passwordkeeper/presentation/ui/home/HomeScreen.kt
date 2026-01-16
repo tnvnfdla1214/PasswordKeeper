@@ -78,6 +78,7 @@ fun HomeScreen(
     ) {
 
         HomeContentSection(
+            modifier = Modifier.fillMaxSize().systemBarsPadding().align(Alignment.TopStart),
             itemsSize = items.size,
             isSearchFocused = isSearchFocused,
             isDeleteMode = isDeleteMode,
@@ -110,6 +111,7 @@ fun HomeScreen(
 
 @Composable
 fun BoxScope.HomeContentSection(
+    modifier: Modifier,
     itemsSize: Int,
     isSearchFocused: Boolean,
     isDeleteMode: Boolean,
@@ -134,12 +136,7 @@ fun BoxScope.HomeContentSection(
         label = "contentOffsetY"
     )
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-            .align(Alignment.TopStart)
-    ) {
+    Box( modifier = modifier ) {
         Column(
             modifier = Modifier
                 .onGloballyPositioned { coordinates ->
