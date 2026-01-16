@@ -99,7 +99,7 @@ fun HomeScreen(
         )
 
         HomeBottomScaffoldButton(
-            modifier = Modifier.align(Alignment.BottomEnd),
+            modifier = Modifier.align(Alignment.BottomEnd).systemBarsPadding(),
             onAddClick = onAddClick,
             isDeleteMode = isDeleteMode,
             selectedCount = selectedItems.size,
