@@ -2,6 +2,7 @@ package com.passwordkeeper.presentation.ui.form
 
 import android.app.Activity
 import android.util.Log
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
@@ -16,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,6 +54,9 @@ fun PasswordFormScreen(
 
     var savedState by remember { mutableStateOf<PasswordFormState?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    val density = LocalDensity.current
+    val isKeyboardVisible = WindowInsets.ime.getBottom(density) > 0
 
     if (savedState != null) {
         CustomDialog(
@@ -246,7 +251,7 @@ fun PasswordFormScreen(
                 ),
             )
         }
-        //todo : 키보드가 올라오면 버튼과 키보드 사이에 padding이 존재하는데 이유가 뭔지 모르겠음
+
         PasswordFormButtons(
             modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp),
             formState = formState,
@@ -270,6 +275,12 @@ fun PasswordFormScreen(
                 viewModel.switchToUpdateMode()
             }
         )
+
+        val spacerHeight by animateDpAsState(
+            targetValue = if (isKeyboardVisible) 0.dp else 44.dp,
+            label = "spacerHeight"
+        )
+        Spacer(modifier = Modifier.height(spacerHeight))
     }
 }
 
