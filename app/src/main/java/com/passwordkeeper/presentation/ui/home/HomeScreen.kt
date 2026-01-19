@@ -376,7 +376,7 @@ fun HomeAdBanner(
             AdView(context).apply {
                 setAdSize(AdSize.BANNER)
                 // TODO: 실제 광고 ID로 교체 필요
-                adUnitId = "ca-app-pub-3940256099942544/6300978111" // 테스트 광고 ID
+                adUnitId = "ca-app-pub-5510790980523633/5274352211" // 테스트 광고 ID
                 loadAd(AdRequest.Builder().build())
             }
         }

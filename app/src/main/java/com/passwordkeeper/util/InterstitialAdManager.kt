@@ -22,7 +22,7 @@ class InterstitialAdManager {
 
         InterstitialAd.load(
             context,
-            "ca-app-pub-3940256099942544/1033173712", // todo : 테스트 전면광고 ID 변경
+            "ca-app-pub-5510790980523633/7485582581",
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
