@@ -15,8 +15,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -58,6 +62,10 @@ fun SettingScreen(
             )
         }
     ) { paddingValues ->
+        val context = LocalContext.current
+        val versionName = remember {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -69,37 +77,33 @@ fun SettingScreen(
                 modifier = Modifier,
                 title = "문의사항",
                 onClick = {
-                    //클릭
-                }
-            )
-            SettingItem(
-                modifier = Modifier,
-                title = "이용약관",
-                onClick = {
-                    //클릭
-                }
-            )
-            SettingItem(
-                modifier = Modifier,
-                title = "사용자 개인정보 선택 사항 안내",
-                onClick = {
-                    //클릭
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(
+                            "https://docs.google.com/forms/d/e/1FAIpQLSeb-fVpdF_J8iHZwGyPNuEgqhrXNwKkZ6L36MgLUr2IwLcMHg/viewform"
+                        )
+                    )
+                    context.startActivity(intent)
                 }
             )
             SettingItem(
                 modifier = Modifier,
                 title = "개인정보 처리방침",
                 onClick = {
-                    //클릭
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(
+                            "https://pointy-hourglass-08a.notion.site/2edcf38172a8804aa423f912f2128660?source=copy_link"
+                        )
+                    )
+                    context.startActivity(intent)
                 }
             )
             SettingItem(
                 modifier = Modifier,
                 title = "버전 정보",
-                description = "v1.0.0", //todo : 버전 가져와야 함
-                onClick = {
-                    //클릭
-                }
+                description = "v$versionName",
+                onClick = {}
             )
             SettingItem(
                 modifier = Modifier,
