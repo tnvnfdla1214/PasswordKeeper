@@ -9,6 +9,15 @@ android {
     namespace = "com.passwordkeeper"
     compileSdk = 34
 
+    signingConfigs {
+        create("release") {
+//            storeFile = file("")
+//            storePassword = ""
+//            keyAlias = ""
+//            keyPassword = ""
+        }
+    }
+
     defaultConfig {
         applicationId = "com.passwordkeeper"
         minSdk = 26
@@ -23,12 +32,22 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            isDebuggable = true
+            resValue("string", "app_name", "기억노트 (Debug)")
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            resValue("string", "app_name", "기억노트")
         }
     }
 
