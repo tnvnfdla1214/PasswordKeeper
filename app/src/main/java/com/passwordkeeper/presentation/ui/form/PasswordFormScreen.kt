@@ -304,7 +304,8 @@ private fun PasswordFormButtons(
             Button(
                 modifier = modifier,
                 onClick = onSaveClick,
-                enabled = isFormValid
+                enabled = isFormValid,
+                shape = RoundedCornerShape(10.dp)
             ) {
                 Text("저장하기")
             }
@@ -320,6 +321,7 @@ private fun PasswordFormButtons(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error
                     ),
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Text("삭제하기")
                 }
@@ -327,6 +329,7 @@ private fun PasswordFormButtons(
                 Button(
                     onClick = onEditClick,
                     modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Text("수정하기")
                 }
@@ -336,7 +339,8 @@ private fun PasswordFormButtons(
             Button(
                 onClick = onSaveClick,
                 modifier = modifier,
-                enabled = isFormValid
+                enabled = isFormValid,
+                shape = RoundedCornerShape(10.dp)
             ) {
                 Text("수정하기")
             }
