@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.passwordkeeper"
-    compileSdk = 34
+    compileSdk = 35
 
     signingConfigs {
         create("release") {
@@ -21,8 +21,8 @@ android {
     defaultConfig {
         applicationId = "com.mingyu.memorynote"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
+        targetSdk = 35
+        versionCode = 2
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
