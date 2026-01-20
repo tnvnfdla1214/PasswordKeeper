@@ -19,7 +19,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.passwordkeeper"
+        applicationId = "com.mingyu.memorynote"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
