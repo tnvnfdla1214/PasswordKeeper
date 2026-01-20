@@ -198,9 +198,13 @@ fun BoxScope.HomeContentSection(
                     onSearchFocusChanged = onSearchFocusChanged
                 )
 
+                Spacer(modifier = Modifier.height(16.dp))
+
                 HomeAdBanner(
-                    modifier = Modifier.height(50.dp).padding(top = 16.dp)
+                    modifier = Modifier.height(50.dp)
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 HomeItemList(
                     modifier = Modifier.weight(1f),
@@ -424,7 +428,7 @@ fun HomeEmptyState(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(top = 40.dp)
+            .padding(top = 36.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
@@ -452,7 +456,7 @@ fun HomePasswordList(
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp)
+        contentPadding = PaddingValues(top = 4.dp, bottom = 80.dp)
     ) {
         item {
             HomeDeleteToggle(
