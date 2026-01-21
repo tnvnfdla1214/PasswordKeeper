@@ -131,6 +131,7 @@ fun BoxScope.HomeContentSection(
     var textHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
     val textSpacer = 21.dp
+    val textBetweenSpacer = 26.dp //HomeAdBanner 의 상단 하단의 spacer 높이 크기 커밋 : home 화면 배너 가려지는 현상 오류 수정
     val contentOffsetY by animateDpAsState(
         targetValue = if (isSearchFocused) textHeight + textSpacer else 0.dp,
         label = "contentOffsetY"
@@ -182,7 +183,7 @@ fun BoxScope.HomeContentSection(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(screenHeight - headerHeight + contentOffsetY)
+                .height(screenHeight - headerHeight + contentOffsetY - textBetweenSpacer)
                 .clip(RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp))
                 .background(MaterialTheme.colorScheme.background),
         ) {
